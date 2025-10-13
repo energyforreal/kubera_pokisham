@@ -1,0 +1,69 @@
+trading:
+  symbol: "BTCUSDT"
+  initial_balance: 10000.0
+  mode: "paper"
+  timeframes:
+    - "15m"
+    - "1h"
+    - "4h"
+  update_interval: 900  # 15 minutes in seconds
+
+position_sizing:
+  method: "fixed_fractional"  # Options: fixed_fractional, kelly_criterion
+  risk_per_trade: 0.02
+  min_position_size: 100
+  max_position_size: 2500
+
+risk_management:
+  max_daily_loss_percent: 5
+  max_drawdown_percent: 15
+  max_consecutive_losses: 5
+  stop_loss_atr_multiplier: 2.0
+  take_profit_risk_reward: 2.0
+  min_time_between_trades: 300  # seconds
+
+signal_filters:
+  min_confidence: 0.65
+  require_volume_confirmation: true
+  min_volume_ratio: 1.0
+
+execution:
+  transaction_cost: 0.001  # 0.1%
+  slippage: 0.0005  # 0.05%
+  order_type: "market"
+
+model:
+  type: "xgboost"
+  path: "models/xgboost_model.pkl"
+  retrain_interval: 7  # days
+  n_estimators: 200
+  max_depth: 6
+  learning_rate: 0.1
+
+features:
+  # Price-based indicators
+  sma_periods: [10, 20, 50, 100, 200]
+  ema_periods: [9, 12, 26, 50]
+  
+  # Momentum indicators
+  rsi_period: 14
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  stoch_period: 14
+  
+  # Volatility indicators
+  atr_period: 14
+  bollinger_period: 20
+  bollinger_std: 2
+  
+  # Volume indicators
+  obv_enabled: true
+  volume_sma_period: 20
+
+alerts:
+  trade_execution: true
+  risk_alerts: true
+  daily_reports: true
+  report_time: "18:00"  # UTC
+
