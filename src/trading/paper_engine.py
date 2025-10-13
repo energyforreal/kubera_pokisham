@@ -1,6 +1,6 @@
 """Paper trading engine for simulating trades."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from sqlalchemy.orm import Session
@@ -158,7 +158,7 @@ class PaperTradingEngine:
             'take_profit': take_profit,
             'transaction_cost': transaction_cost,
             'confidence': confidence,
-            'timestamp': datetime.utcnow(),
+            'timestamp': datetime.now(timezone.utc),
             'balance': self.portfolio.balance
         }
         
@@ -216,7 +216,7 @@ class PaperTradingEngine:
             'holding_period': trade.holding_period,
             'close_reason': reason,
             'transaction_cost': transaction_cost,
-            'timestamp': datetime.utcnow(),
+            'timestamp': datetime.now(timezone.utc),
             'balance': self.portfolio.balance
         }
         

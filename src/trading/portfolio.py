@@ -1,6 +1,6 @@
 """Portfolio management and tracking."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -100,7 +100,7 @@ class Portfolio:
             size=size,
             stop_loss=stop_loss,
             take_profit=take_profit,
-            entry_timestamp=datetime.utcnow()
+            entry_timestamp=datetime.now(timezone.utc)
         )
         
         self.db.add(position)
@@ -182,7 +182,7 @@ class Portfolio:
         pnl_percent = (pnl / (position.entry_price * position.size)) * 100
         
         # Calculate holding period
-        holding_period = (datetime.utcnow() - position.entry_timestamp).total_seconds()
+        holding_period = (datetime.now(timezone.utc) - position.entry_timestamp).total_seconds()
         
         # Create trade record
         trade = Trade(
@@ -199,7 +199,7 @@ class Portfolio:
             holding_period=int(holding_period),
             is_closed=True,
             close_reason=reason,
-            closed_at=datetime.utcnow()
+            closed_at=datetime.now(timezone.utc)
         )
         
         self.db.add(trade)
@@ -294,7 +294,7 @@ class Portfolio:
     
     def save_daily_metrics(self):
         """Save daily performance metrics."""
-        today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         
         # Check if already saved for today
         existing = self.db.query(PerformanceMetrics).filter(

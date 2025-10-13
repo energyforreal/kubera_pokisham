@@ -3,7 +3,7 @@
 import hashlib
 import hmac
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -12,6 +12,7 @@ from requests.exceptions import RequestException
 
 from src.core.config import settings
 from src.core.logger import logger
+from src.utils.retry import retry_with_backoff
 
 
 class DeltaExchangeClient:
@@ -34,6 +35,7 @@ class DeltaExchangeClient:
         ).hexdigest()
         return signature, timestamp
     
+    @retry_with_backoff(max_retries=3, initial_delay=1.0, exceptions=(RequestException, ConnectionError))
     def _make_request(
         self,
         method: str,
@@ -41,7 +43,7 @@ class DeltaExchangeClient:
         params: Optional[Dict] = None,
         authenticated: bool = False
     ) -> Dict:
-        """Make HTTP request to Delta Exchange API."""
+        """Make HTTP request to Delta Exchange API with automatic retry."""
         url = f"{self.base_url}{endpoint}"
         headers = {"Content-Type": "application/json"}
         
@@ -55,6 +57,7 @@ class DeltaExchangeClient:
             })
         
         try:
+            logger.debug(f"API request", method=method, endpoint=endpoint)
             response = self.session.request(
                 method=method,
                 url=url,
@@ -63,9 +66,10 @@ class DeltaExchangeClient:
                 timeout=10
             )
             response.raise_for_status()
+            logger.debug(f"API request successful", endpoint=endpoint, status=response.status_code)
             return response.json()
         except RequestException as e:
-            logger.error("API request failed", error=str(e), endpoint=endpoint)
+            logger.error("API request failed", error=str(e), endpoint=endpoint, url=url)
             raise
     
     def get_ohlc_candles(

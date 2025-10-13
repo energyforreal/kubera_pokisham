@@ -1,10 +1,18 @@
 """Telegram command handlers."""
 
-from datetime import datetime, timedelta
+import sys
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from telegram import Update
-from telegram.ext import ContextTypes
+# Fix import conflict between local 'telegram' package and python-telegram-bot
+_original_path = sys.path.copy()
+sys.path = [p for p in sys.path if 'Trading Agent' not in p or 'site-packages' in p]
+try:
+    from telegram import Update
+    from telegram.ext import ContextTypes
+finally:
+    sys.path = _original_path
+
 from sqlalchemy.orm import Session
 
 from src.core.config import settings
@@ -135,30 +143,55 @@ Ready to start paper trading! 📈
             
             confidence_bar = '█' * int(signal['confidence'] * 10)
             
-            message = f"""
-🤖 **AI Trading Signal**
+            # Check if multi-model
+            individual_preds = signal.get('individual_predictions', [])
+            strategy = signal.get('strategy', 'single')
+            
+            if individual_preds:
+                # Multi-model signal
+                message = f"""
+🤖 MULTI-MODEL AI Signal
 
-{signal_emoji} **Prediction:** {signal['prediction']}
-📊 **Confidence:** {signal['confidence']:.1%}
+{signal_emoji} Combined: {signal['prediction']}
+📊 Confidence: {signal['confidence']:.1%}
 {confidence_bar}
 
-📈 **Market Data:**
+Strategy: {strategy.upper()}
+Models Agree: {'✅ Yes' if signal.get('models_agree') else '❌ No'}
+Agreement: {signal.get('agreement_level', 0):.0%}
+
+Individual Models:
+"""
+                for pred in individual_preds:
+                    emoji = {'BUY': '🟢', 'SELL': '🔴', 'HOLD': '⚪'}.get(pred['signal'], '❓')
+                    message += f"  {emoji} {pred['timeframe']}: {pred['signal']} ({pred['confidence']:.1%})\n"
+                
+                message += f"""
+✅ Actionable: {'Yes' if signal.get('actionable') else 'No'}
+📊 Data Quality: {signal.get('data_quality', 0):.1f}%
+⏰ Time: {signal['timestamp'].strftime('%H:%M:%S')}
+"""
+            else:
+                # Single model signal
+                message = f"""
+🤖 AI Trading Signal
+
+{signal_emoji} Prediction: {signal['prediction']}
+📊 Confidence: {signal['confidence']:.1%}
+{confidence_bar}
+
+Market Data:
 • Symbol: {signal.get('symbol', 'N/A')}
 • Price: ${signal.get('current_price', 0):.2f}
 • RSI: {signal.get('rsi', 0):.1f}
 • MACD: {signal.get('macd', 0):.4f}
 • ATR: ${signal.get('atr', 0):.2f}
 
-✅ **Actionable:** {'Yes' if signal.get('is_actionable') else 'No'}
-⏰ **Timestamp:** {signal['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}
-
-**Probabilities:**
-🟢 BUY: {signal.get('probabilities', {}).get('BUY', 0):.1%}
-⚪ HOLD: {signal.get('probabilities', {}).get('HOLD', 0):.1%}
-🔴 SELL: {signal.get('probabilities', {}).get('SELL', 0):.1%}
-            """
+✅ Actionable: {'Yes' if signal.get('is_actionable') else 'No'}
+⏰ Timestamp: {signal['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}
+"""
             
-            await update.message.reply_text(message, parse_mode='Markdown')
+            await update.message.reply_text(message)
             
         except Exception as e:
             logger.error("Signals command failed", error=str(e))
@@ -248,7 +281,7 @@ Use /resume when ready to restart
             from src.core.database import Trade, PerformanceMetrics
             
             # Get today's trades
-            today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
             today_trades = self.db.query(Trade).filter(
                 Trade.timestamp >= today_start,
                 Trade.is_closed == True
@@ -268,7 +301,7 @@ Use /resume when ready to restart
             
             message = f"""
 📊 **Daily Performance Report**
-📅 {datetime.utcnow().strftime('%Y-%m-%d')}
+📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
 
 **Trading Summary**
 • Total Trades: {total_trades}
@@ -298,24 +331,24 @@ Use /resume when ready to restart
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command."""
         help_message = """
-📚 **Kubera Pokisham - Command Reference**
+📚 Kubera Pokisham - Command Reference
 
-**📊 Monitoring**
+📊 Monitoring
 /status - Portfolio status and PnL
 /positions - View open positions details
 /signals - Latest AI trading signals
 /daily - Daily performance report
 
-**🎮 Control**
+🎮 Control
 /pause - Pause trading (keeps positions)
 /resume - Resume trading
 /emergency_stop - Close all positions & pause
 
-**ℹ️ Information**
+ℹ️ Information
 /start - Welcome message
 /help - This help message
 
-**💡 Tips:**
+💡 Tips:
 • Check /signals before major moves
 • Use /pause during high volatility
 • Review /daily report regularly
@@ -323,5 +356,5 @@ Use /resume when ready to restart
 
 Need help? Contact support.
         """
-        await update.message.reply_text(help_message, parse_mode='Markdown')
+        await update.message.reply_text(help_message)
 

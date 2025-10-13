@@ -1,6 +1,6 @@
 """Model training pipeline with walk-forward validation."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -41,7 +41,7 @@ class ModelTrainer:
         logger.info("Preparing training data", symbol=symbol, timeframe=timeframe, days=days)
         
         # Fetch historical data
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=days)
         
         df = self.delta_client.get_ohlc_candles(

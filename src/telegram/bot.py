@@ -1,11 +1,20 @@
 """Telegram bot for trading agent control and monitoring."""
 
 import asyncio
+import sys
 from datetime import datetime
 from typing import Optional
 
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+# Fix import conflict between local 'telegram' package and python-telegram-bot
+# Temporarily remove local path to import the actual telegram package
+_original_path = sys.path.copy()
+sys.path = [p for p in sys.path if 'Trading Agent' not in p or 'site-packages' in p]
+try:
+    from telegram import Update
+    from telegram.ext import Application, CommandHandler, ContextTypes
+finally:
+    sys.path = _original_path
+
 from sqlalchemy.orm import Session
 
 from src.core.config import settings

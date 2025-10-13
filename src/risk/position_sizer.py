@@ -37,6 +37,28 @@ class PositionSizer:
         Returns:
             Position size in quote currency
         """
+        # Input validation
+        if balance <= 0:
+            logger.error("Invalid balance", balance=balance)
+            return 0.0
+        
+        # Validate confidence is in range [0, 1]
+        if confidence < 0 or confidence > 1:
+            logger.warning(
+                "Confidence out of bounds, clamping",
+                original=confidence,
+                clamped=max(0.0, min(1.0, confidence))
+            )
+            confidence = max(0.0, min(1.0, confidence))
+        
+        # Validate risk_per_trade if provided
+        if risk_per_trade is not None and (risk_per_trade < 0 or risk_per_trade > 0.1):
+            logger.warning(
+                "Risk per trade out of safe range, clamping to 0.1",
+                original=risk_per_trade
+            )
+            risk_per_trade = max(0.001, min(0.1, risk_per_trade))
+        
         if self.method == 'fixed_fractional':
             size = self._fixed_fractional(balance, risk_per_trade, confidence)
         elif self.method == 'kelly_criterion':
@@ -53,14 +75,29 @@ class PositionSizer:
         min_size = self.config.get('min_position_size', 100)
         max_size = self.config.get('max_position_size', balance * 0.25)
         
+        # Additional safety check - never risk more than 10% in a single trade
+        absolute_max = balance * 0.10
+        max_size = min(max_size, absolute_max)
+        
+        original_size = size
         size = max(min_size, min(size, max_size))
+        
+        if size != original_size:
+            logger.warning(
+                "Position size clamped to limits",
+                original=original_size,
+                final=size,
+                min=min_size,
+                max=max_size
+            )
         
         logger.info(
             "Position size calculated",
             method=self.method,
             size=size,
             balance=balance,
-            confidence=confidence
+            confidence=confidence,
+            size_pct_of_balance=f"{(size/balance)*100:.2f}%"
         )
         
         return size

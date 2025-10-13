@@ -1,6 +1,6 @@
 """Circuit breaker system to halt trading under adverse conditions."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -53,7 +53,7 @@ class CircuitBreaker:
         if triggered_breakers:
             self.is_triggered = True
             self.trigger_reason = triggered_breakers[0]['reason']
-            self.trigger_time = datetime.utcnow()
+            self.trigger_time = datetime.now(timezone.utc)
             
             logger.warning(
                 "Circuit breaker triggered",
@@ -81,7 +81,7 @@ class CircuitBreaker:
         max_daily_loss = self.config.get('max_daily_loss_percent', 5) / 100
         
         # Get today's trades
-        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         
         today_trades = self.db.query(Trade).filter(
             Trade.timestamp >= today_start,
@@ -183,7 +183,7 @@ class CircuitBreaker:
                 'time_since_last': None
             }
         
-        time_since_last = (datetime.utcnow() - self.last_trade_time).total_seconds()
+        time_since_last = (datetime.now(timezone.utc) - self.last_trade_time).total_seconds()
         triggered = time_since_last < min_time_seconds
         
         return {
@@ -200,7 +200,7 @@ class CircuitBreaker:
         Args:
             timestamp: Trade timestamp (default: now)
         """
-        self.last_trade_time = timestamp or datetime.utcnow()
+        self.last_trade_time = timestamp or datetime.now(timezone.utc)
     
     def reset(self):
         """Reset circuit breaker (manual override)."""
@@ -221,7 +221,7 @@ class CircuitBreaker:
         
         # Allow resume after 1 hour cooldown
         cooldown_minutes = 60
-        time_since_trigger = (datetime.utcnow() - self.trigger_time).total_seconds() / 60
+        time_since_trigger = (datetime.now(timezone.utc) - self.trigger_time).total_seconds() / 60
         
         can_resume = time_since_trigger >= cooldown_minutes
         

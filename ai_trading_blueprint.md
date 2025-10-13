@@ -2602,7 +2602,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 **Last Updated:** October 13, 2025  
 **Maintained by:** Lokesh Murali  
-**License:** MIT (for educational purposes)
+
 
 ---
 
@@ -2610,7 +2610,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 ```bash
 # 1. Star the repository
-git clone https://github.com/yourusername/ai-trading-agent
+git clone https://github.com/energyforreal/kubera_pokisham.git
 cd ai-trading-agent
 
 # 2. Follow the Quick Start Guide above

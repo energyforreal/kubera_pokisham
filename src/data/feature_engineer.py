@@ -236,7 +236,7 @@ class FeatureEngineer:
         
         # Replace inf with nan and fill
         X = X.replace([np.inf, -np.inf], np.nan)
-        X = X.fillna(method='ffill').fillna(0)
+        X = X.ffill().fillna(0)
         
         return X, y, feature_cols
 

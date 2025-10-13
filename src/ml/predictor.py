@@ -1,6 +1,6 @@
 """Prediction service for generating trading signals."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 import pandas as pd
@@ -22,8 +22,10 @@ class TradingPredictor:
         self.feature_engineer = FeatureEngineer()
         self.validator = DataValidator()
         
-        # Load model
-        model_path = model_path or settings.model_path
+        # Load model - prioritize config.yaml model path over .env
+        if model_path is None:
+            model_path = trading_config.model.get('path', settings.model_path)
+        
         try:
             self.model.load(model_path)
             logger.info("Prediction model loaded", path=model_path)
@@ -73,7 +75,7 @@ class TradingPredictor:
             latest_candle = df.iloc[-1]
             
             signal = {
-                'timestamp': datetime.utcnow(),
+                'timestamp': datetime.now(timezone.utc),
                 'symbol': symbol,
                 'timeframe': timeframe,
                 'prediction': prediction,
@@ -143,7 +145,7 @@ class TradingPredictor:
             combined_confidence = sum(matching_confidences) / len(matching_confidences)
         
         combined_signal = {
-            'timestamp': datetime.utcnow(),
+            'timestamp': datetime.now(timezone.utc),
             'symbol': symbol,
             'prediction': combined_prediction,
             'confidence': combined_confidence,
@@ -171,7 +173,7 @@ class TradingPredictor:
             Empty signal dictionary
         """
         return {
-            'timestamp': datetime.utcnow(),
+            'timestamp': datetime.now(timezone.utc),
             'prediction': 'HOLD',
             'confidence': 0.0,
             'is_actionable': False,

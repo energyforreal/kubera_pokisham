@@ -5,7 +5,7 @@ trading:
   timeframes:
     - "15m"
     - "1h"
-    - "4h"
+    # - "4h"  # Commented out - only 30% accuracy
   update_interval: 900  # 15 minutes in seconds
 
 position_sizing:
@@ -34,11 +34,25 @@ execution:
 
 model:
   type: "xgboost"
-  path: "models/xgboost_model.pkl"
+  path: "models/xgboost_BTCUSD_15m.pkl"  # Best performing model (95.25% accuracy)
   retrain_interval: 7  # days
   n_estimators: 200
   max_depth: 6
   learning_rate: 0.1
+  
+  # Multi-model ensemble configuration
+  multi_model:
+    enabled: true  # Set to false to use single model
+    strategy: "confirmation"  # Options: confirmation, weighted, voting
+    require_all_agree: true  # For confirmation strategy
+    min_combined_confidence: 0.70
+    models:
+      - path: "models/xgboost_BTCUSD_15m.pkl"
+        weight: 0.7
+        timeframe: "15m"
+      - path: "models/xgboost_BTCUSD_1h.pkl"
+        weight: 0.3
+        timeframe: "1h"
 
 features:
   # Price-based indicators

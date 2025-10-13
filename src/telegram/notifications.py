@@ -1,11 +1,18 @@
 """Notification service for sending alerts via Telegram."""
 
 import asyncio
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
-from telegram import Bot
-from telegram.error import TelegramError
+# Fix import conflict between local 'telegram' package and python-telegram-bot
+_original_path = sys.path.copy()
+sys.path = [p for p in sys.path if 'Trading Agent' not in p or 'site-packages' in p]
+try:
+    from telegram import Bot
+    from telegram.error import TelegramError
+finally:
+    sys.path = _original_path
 
 from src.core.logger import logger
 
@@ -91,7 +98,7 @@ class NotificationService:
 {trade.get('symbol', 'Unknown')}
 Reason: {trade.get('reason', 'Unknown')}
 
-⏰ {datetime.utcnow().strftime('%H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%H:%M:%S')}
             """
         
         else:
@@ -120,7 +127,7 @@ Reason: {trade.get('reason', 'Unknown')}
 
 Trading will resume automatically after cooldown period or use /resume command.
 
-⏰ {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
         
         elif alert_type == 'drawdown':
@@ -133,7 +140,7 @@ Current Balance: ${alert.get('current_balance', 0):.2f}
 
 Please review your strategy!
 
-⏰ {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
         
         elif alert_type == 'daily_loss':
@@ -145,7 +152,7 @@ Limit: {alert.get('limit_pct', 0):.2f}%
 
 Consider reducing position sizes or pausing trading.
 
-⏰ {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
         
         else:
@@ -154,7 +161,7 @@ Consider reducing position sizes or pausing trading.
 
 {alert.get('message', 'Risk threshold exceeded')}
 
-⏰ {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
         
         await self.send_message(message)
@@ -167,7 +174,7 @@ Consider reducing position sizes or pausing trading.
         """
         message = f"""
 📊 **DAILY PERFORMANCE REPORT**
-📅 {datetime.utcnow().strftime('%Y-%m-%d')}
+📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
 
 **Trading Activity**
 • Trades: {report.get('total_trades', 0)}
@@ -220,7 +227,7 @@ Trading agent has been shut down.
 All positions remain as they were.
 No new trades will be executed.
 
-⏰ {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
         """
         await self.send_message(message)
 

@@ -3,16 +3,23 @@
 import asyncio
 import signal
 import sys
-from datetime import datetime, time as dt_time
+from pathlib import Path
+from datetime import datetime, time as dt_time, timezone
 from typing import Optional
+
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from src.core.config import settings, trading_config
 from src.core.database import SessionLocal, init_db
 from src.core.logger import logger
 from src.data.delta_client import DeltaExchangeClient
 from src.ml.predictor import TradingPredictor
+from src.ml.multi_model_predictor import MultiModelPredictor
 from src.trading.paper_engine import PaperTradingEngine
 from src.telegram.bot import TradingBot, set_bot
+from src.monitoring.health_check import get_health_check
 
 
 class TradingAgent:
@@ -22,9 +29,23 @@ class TradingAgent:
         self.is_running = False
         self.delta_client = DeltaExchangeClient()
         self.db = SessionLocal()
+        self.health_check = get_health_check()
         
         # Initialize components
-        self.predictor = TradingPredictor()
+        # Check if multi-model is enabled
+        multi_model_config = trading_config.model.get('multi_model', {})
+        multi_model_enabled = multi_model_config.get('enabled', False)
+        
+        if multi_model_enabled:
+            strategy = multi_model_config.get('strategy', 'confirmation')
+            self.predictor = MultiModelPredictor(strategy=strategy)
+            self.health_check.update_models_loaded(len(self.predictor.models))
+            logger.info(f"Using multi-model predictor", strategy=strategy, models=len(self.predictor.models))
+        else:
+            self.predictor = TradingPredictor()
+            self.health_check.update_models_loaded(1)
+            logger.info("Using single model predictor")
+        
         self.trading_engine = PaperTradingEngine(self.db, settings.initial_balance)
         self.telegram_bot: Optional[TradingBot] = None
         
@@ -60,8 +81,11 @@ class TradingAgent:
         
         while self.is_running:
             try:
+                # Record heartbeat for health monitoring
+                self.health_check.heartbeat()
+                
                 # Get current time
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 
                 # Check if trading is paused
                 if self.telegram_bot and self.telegram_bot.trading_paused:
@@ -98,16 +122,41 @@ class TradingAgent:
                 # 3. Update position unrealized PnL
                 self.trading_engine.portfolio.update_equity({self.symbol: current_price})
                 
-                # 4. Get AI trading signal
+                # 4. Check circuit breaker BEFORE getting signal (prevent unnecessary API calls)
+                circuit_status = self.trading_engine.circuit_breaker.check_all_breakers(
+                    self.trading_engine.portfolio.balance,
+                    self.trading_engine.portfolio.initial_balance
+                )
+                
+                if circuit_status['triggered']:
+                    logger.warning(
+                        "Circuit breaker active - skipping trade execution",
+                        reason=circuit_status['reason'],
+                        details=circuit_status
+                    )
+                    if self.telegram_bot:
+                        await self.telegram_bot.notify_risk_alert({
+                            'type': 'circuit_breaker',
+                            'reason': circuit_status['reason'],
+                            'details': str(circuit_status)
+                        })
+                    await asyncio.sleep(self.update_interval)
+                    continue
+                
+                # 5. Get AI trading signal
                 logger.info("Getting trading signal")
                 signal = self.predictor.get_latest_signal(self.symbol, self.timeframe)
+                
+                # Record signal generation
+                if signal:
+                    self.health_check.record_signal(signal)
                 
                 if not signal or not signal.get('is_actionable'):
                     logger.debug("No actionable signal", signal=signal.get('prediction') if signal else None)
                     await asyncio.sleep(self.update_interval)
                     continue
                 
-                # 5. Execute trade based on signal
+                # 6. Execute trade based on signal
                 logger.info(
                     "Actionable signal received",
                     prediction=signal['prediction'],
@@ -123,22 +172,26 @@ class TradingAgent:
                     metadata=signal
                 )
                 
-                # 6. Send notification
-                if result['status'] in ['filled', 'closed', 'rejected'] and self.telegram_bot:
-                    await self.telegram_bot.notify_trade(result)
+                # 7. Send notification and record trade
+                if result['status'] in ['filled', 'closed', 'rejected']:
+                    if self.telegram_bot:
+                        await self.telegram_bot.notify_trade(result)
+                    if result['status'] == 'filled':
+                        self.health_check.record_trade(result)
                 
-                # 7. Check risk alerts
-                circuit_status = self.trading_engine.circuit_breaker.check_all_breakers(
+                # 8. Record trade for circuit breaker tracking
+                if result['status'] == 'filled':
+                    self.trading_engine.circuit_breaker.record_trade(
+                        pnl=0,  # Will be updated when position closes
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                
+                # Update circuit breaker status in health check
+                circuit_check = self.trading_engine.circuit_breaker.check_all_breakers(
                     self.trading_engine.portfolio.balance,
                     self.trading_engine.portfolio.initial_balance
                 )
-                
-                if circuit_status['triggered'] and self.telegram_bot:
-                    await self.telegram_bot.notify_risk_alert({
-                        'type': 'circuit_breaker',
-                        'reason': circuit_status['reason'],
-                        'details': str(circuit_status)
-                    })
+                self.health_check.update_circuit_breaker(circuit_check['triggered'])
                 
                 # 8. Save daily metrics (once per day at midnight)
                 if now.hour == 0 and now.minute < 15:  # Around midnight
@@ -163,6 +216,7 @@ class TradingAgent:
                 
             except Exception as e:
                 logger.error("Error in trading loop", error=str(e), exc_info=True)
+                self.health_check.record_error(str(e))
                 await asyncio.sleep(60)  # Wait a minute before retrying
     
     async def start(self):

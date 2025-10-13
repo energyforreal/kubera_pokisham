@@ -1,0 +1,12 @@
+{
+  "is_alive": true,
+  "last_heartbeat": "2025-10-13T18:46:56.423094+00:00",
+  "last_signal": "2025-10-13T18:46:58.268137+00:00",
+  "last_trade": null,
+  "errors_count": 0,
+  "signals_count": 2,
+  "trades_count": 0,
+  "uptime_seconds": 0,
+  "models_loaded": 2,
+  "circuit_breaker_active": false
+}

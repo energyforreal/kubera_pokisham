@@ -1,6 +1,6 @@
 """Risk management and calculation."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -164,7 +164,7 @@ class RiskManager:
             Dict with daily risk metrics
         """
         if date is None:
-            date = datetime.utcnow().date()
+            date = datetime.now(timezone.utc).date()
         
         # Get performance metrics
         perf = self.db.query(PerformanceMetrics).filter(
@@ -201,7 +201,7 @@ class RiskManager:
         Returns:
             Array of returns
         """
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
         
         trades = self.db.query(Trade).filter(
             Trade.timestamp >= cutoff_date,
