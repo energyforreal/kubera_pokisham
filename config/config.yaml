@@ -1,5 +1,5 @@
 trading:
-  symbol: "BTCUSDT"
+  symbol: "BTCUSD"
   initial_balance: 10000.0
   mode: "paper"
   timeframes:

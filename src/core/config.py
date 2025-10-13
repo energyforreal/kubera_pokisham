@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # Delta Exchange API
     delta_api_key: str = Field(default="", alias="DELTA_API_KEY")
     delta_api_secret: str = Field(default="", alias="DELTA_API_SECRET")
-    delta_api_url: str = Field(default="https://api.delta.exchange", alias="DELTA_API_URL")
+    delta_api_url: str = Field(default="https://api.india.delta.exchange", alias="DELTA_API_URL")
     
     # Telegram Bot
     telegram_bot_token: str = Field(default="", alias="TELEGRAM_BOT_TOKEN")
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     # Trading Configuration
     initial_balance: float = Field(default=10000.0, alias="INITIAL_BALANCE")
     trading_mode: str = Field(default="paper", alias="TRADING_MODE")
-    trading_symbol: str = Field(default="BTCUSDT", alias="TRADING_SYMBOL")
+    trading_symbol: str = Field(default="BTCUSD", alias="TRADING_SYMBOL")
     
     # Database
     database_url: str = Field(default="sqlite:///./kubera_pokisham.db", alias="DATABASE_URL")
