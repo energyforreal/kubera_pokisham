@@ -5,8 +5,25 @@ trading:
   timeframes:
     - "15m"
     - "1h"
-    # - "4h"  # Commented out - only 30% accuracy
-  update_interval: 900  # 15 minutes in seconds
+    - "4h"  # Multi-timeframe intelligent trading
+  update_interval: 300  # 5 minutes for signal generation
+  entry_signal_interval: 300  # 5 minutes for new entry signals
+  position_monitoring_interval: 300  # 5 minutes for position monitoring
+  
+data:
+  candles:
+    default_limit: 500  # Increased for better feature engineering
+    min_required: 200   # Minimum required candles for predictions
+  
+  # Data synchronization configuration
+  sync:
+    enabled: true
+    interval: 3600  # Sync every hour (3600 seconds)
+    symbols: ["BTCUSD"]  # Symbols to sync
+    timeframes: ["4h", "1h", "15m"]  # Timeframes to sync
+    batch_size: 1000  # Maximum candles per sync operation
+    retry_attempts: 3  # Retry failed syncs
+    retry_delay: 300  # Wait 5 minutes between retries
 
 position_sizing:
   method: "fixed_fractional"  # Options: fixed_fractional, kelly_criterion
@@ -21,9 +38,14 @@ risk_management:
   stop_loss_atr_multiplier: 2.0
   take_profit_risk_reward: 2.0
   min_time_between_trades: 300  # seconds
+  # PHASE 7: New parameters
+  max_holding_hours: 168  # 1 week - force close positions held too long
+  max_position_pct: 0.10  # 10% of balance per trade maximum
+  high_volatility_threshold: 5.0  # percent - ATR threshold for high volatility
+  high_volatility_min_confidence: 0.70  # Require higher confidence in volatile markets
 
 signal_filters:
-  min_confidence: 0.65
+  min_confidence: 0.60  # Adjusted for 4h timeframe models
   require_volume_confirmation: true
   min_volume_ratio: 1.0
 
@@ -33,26 +55,47 @@ execution:
   order_type: "market"
 
 model:
-  type: "xgboost"
-  path: "models/xgboost_BTCUSD_15m.pkl"  # Best performing model (95.25% accuracy)
+  type: "randomforest"
+  path: "models/randomforest_BTCUSD_4h_production_20251014_125258.pkl"  # Best performing model (4/6 criteria)
   retrain_interval: 7  # days
   n_estimators: 200
   max_depth: 6
   learning_rate: 0.1
   
-  # Multi-model ensemble configuration
+  # Multi-model ensemble configuration - ALL 5 MODELS
   multi_model:
-    enabled: true  # Set to false to use single model
-    strategy: "confirmation"  # Options: confirmation, weighted, voting
-    require_all_agree: true  # For confirmation strategy
-    min_combined_confidence: 0.70
+    enabled: true
+    strategy: "cross_timeframe_weighted"  # Multi-timeframe intelligent coordination
+    require_all_agree: false  # Allow weighted consensus
+    min_combined_confidence: 0.60  # Minimum composite confidence for entry
     models:
+      # 15m model - Short-term momentum and entry timing (30% weight)
       - path: "models/xgboost_BTCUSD_15m.pkl"
-        weight: 0.7
+        weight: 0.30
         timeframe: "15m"
+        role: "entry_timing"
+      
+      # 1h model - Medium-term trend confirmation (25% weight)
       - path: "models/xgboost_BTCUSD_1h.pkl"
-        weight: 0.3
+        weight: 0.25
         timeframe: "1h"
+        role: "trend_confirmation"
+      
+      # 4h models - Long-term trend direction (45% weight combined)
+      - path: "models/randomforest_BTCUSD_4h_production_20251014_125258.pkl"
+        weight: 0.20  # Best performing (4/6 criteria)
+        timeframe: "4h"
+        role: "trend_direction"
+      
+      - path: "models/xgboost_BTCUSD_4h_production_20251014_114541.pkl"
+        weight: 0.15  # Good complementary (3/6 criteria)
+        timeframe: "4h"
+        role: "trend_direction"
+      
+      - path: "models/lightgbm_BTCUSD_4h_production_20251014_115655.pkl"
+        weight: 0.10  # Additional diversity
+        timeframe: "4h"
+        role: "trend_direction"
 
 features:
   # Price-based indicators
@@ -80,4 +123,62 @@ alerts:
   risk_alerts: true
   daily_reports: true
   report_time: "18:00"  # UTC
+
+# Model-Driven Position Management (replaces fixed SL/TP)
+model_driven_exits:
+  enabled: true  # Use model-based exits instead of fixed stop-loss/take-profit
+  use_fixed_sl_tp: false  # Disable traditional stops when model exits are enabled
+  
+  # Position confidence thresholds
+  min_position_confidence: 0.40  # Exit immediately if PCS drops below this
+  profit_protection_confidence: 0.55  # Tighten exit threshold when in profit
+  high_confidence_threshold: 0.80  # Continue holding if PCS above this
+  
+  # Exit triggers
+  confidence_decline_threshold: 3  # Exit after N consecutive declining PCS checks
+  reversal_timeframes: ["15m", "1h"]  # Exit if these timeframes flip direction
+  
+  # Emergency stops (catastrophic moves only)
+  emergency_stop_loss_multiplier: 5.0  # 5x ATR emergency stop
+  emergency_stop_enabled: true  # Keep as safety net
+  
+  # Profit extension
+  min_profit_multiple: 1.5  # Minimum R-multiple to trigger profit protection
+  trailing_confidence_threshold: 0.75  # Allow trailing if PCS above this
+
+# Comprehensive Logging Configuration
+logging:
+  cleanup_on_startup: true
+  retention_days: 30
+  format: json
+  rotation: daily
+  compression: true
+  
+  # Component-specific log levels
+  components:
+    trading_agent: INFO
+    ml_coordinator: INFO
+    ml_predictor: INFO
+    data_sync: INFO
+    delta_client: INFO
+    trading_engine: INFO
+    risk_manager: WARNING
+    telegram_bot: INFO
+    backend_api: INFO
+    monitoring: INFO
+    ml_training: INFO
+    diagnostic_service: INFO
+    startup: INFO
+    errors: ERROR
+  
+  # Performance logging
+  performance_logging: true
+  log_api_response_times: true
+  log_database_query_times: true
+  log_memory_usage: true
+  
+  # Error consolidation
+  consolidate_errors: true
+  error_categorization: true
+  track_error_frequency: true
 

@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -23,13 +26,13 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environment
+# Virtual environments
 venv/
 ENV/
 env/
 .venv
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
@@ -37,42 +40,121 @@ env/
 *~
 .DS_Store
 
-# Environment variables
-.env
-*.env
-!env.example
+# Logs
+logs/
+*.log
+*.log.*
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
 
-# Logs
-logs/
-*.log
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
 
-# Model files
-models/*.pkl
-models/*.joblib
-models/*.h5
-models/*.pt
+# Models (optional - comment out if you want to commit trained models)
+# models/*.pkl
+# models/*.pth
+# models/*.txt
+# models/*.cbm
 
-# Data
-data/
-*.csv
-*.parquet
+# Data files (large files)
+data/*.csv
+data/*.json
+data/*.parquet
+data/*.h5
+!data/README.md
 
-# Testing
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# pytest
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
 
-# Jupyter Notebooks
-.ipynb_checkpoints
-*.ipynb
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Docker
+*.env.docker
+!.env.docker.example
 
 # OS
-Thumbs.db
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Node.js (for frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+out/
+build/
+
+# Monitoring data
+prometheus_data/
+grafana_data/
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+!models/*.zip
+
+# Backups
+*.backup
+*.bak
+
+# Secrets
+secrets/
+*.pem
+*.key
+*.cert
+
+# ML experiment tracking
+mlruns/
+runs/
+wandb/
+
+# Misc
+.cache/
+*.sage.py

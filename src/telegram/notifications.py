@@ -75,6 +75,24 @@ class NotificationService:
             pnl_emoji = "📈" if trade['pnl'] >= 0 else "📉"
             result_emoji = "✅" if trade['pnl'] >= 0 else "❌"
             
+            # Enhanced exit reason display
+            close_reason = trade.get('close_reason', 'Unknown')
+            if close_reason == 'take_profit':
+                reason_emoji = "🎯"
+                reason_text = "Target Reached"
+            elif close_reason == 'stop_loss':
+                reason_emoji = "🛑"
+                reason_text = "Stop Loss Triggered"
+            elif close_reason == 'signal':
+                reason_emoji = "📊"
+                reason_text = "Signal Reversal"
+            elif close_reason == 'timeout':
+                reason_emoji = "⏱️"
+                reason_text = "Position Timeout (Max Holding Period)"
+            else:
+                reason_emoji = "📋"
+                reason_text = close_reason.title()
+            
             message = f"""
 {result_emoji} **POSITION CLOSED**
 
@@ -85,7 +103,7 @@ class NotificationService:
 {pnl_emoji} **PnL: ${trade['pnl']:.2f} ({trade['pnl_percent']:+.2f}%)**
 
 ⏱️ Holding Time: {trade.get('holding_period', 0) // 60} minutes
-📋 Reason: {trade['close_reason']}
+{reason_emoji} **Exit Reason: {reason_text}**
 💳 Balance: ${trade['balance']:.2f}
 
 ⏰ {trade['timestamp'].strftime('%H:%M:%S')}
@@ -103,6 +121,54 @@ Reason: {trade.get('reason', 'Unknown')}
         
         else:
             return  # Don't send notification for other statuses
+        
+        await self.send_message(message)
+    
+    async def send_signal_notification(self, signal: Dict):
+        """Send signal generation notification.
+        
+        Args:
+            signal: Signal data
+        """
+        prediction = signal.get('prediction', 'UNKNOWN')
+        confidence = signal.get('confidence', 0.0)
+        symbol = signal.get('symbol', 'Unknown')
+        current_price = signal.get('current_price', 0.0)
+        timestamp = signal.get('timestamp', datetime.now(timezone.utc))
+        
+        # Choose emoji based on signal
+        if prediction == 'BUY':
+            emoji = "🟢"
+            action = "BUY"
+        elif prediction == 'SELL':
+            emoji = "🔴"
+            action = "SELL"
+        else:
+            emoji = "⚪"
+            action = "HOLD"
+        
+        # Format confidence as percentage
+        confidence_pct = f"{confidence:.1%}"
+        
+        # Determine if signal is actionable
+        is_actionable = signal.get('is_actionable', False)
+        actionable_text = "✅ ACTIONABLE" if is_actionable else "⏸️ MONITORING"
+        
+        message = f"""
+{emoji} **SIGNAL GENERATED**
+
+**{action}** {symbol}
+💰 Price: ${current_price:.2f}
+📊 Confidence: {confidence_pct}
+{actionable_text}
+
+📈 Technical Indicators:
+• RSI: {signal.get('rsi', 0):.1f}
+• MACD: {signal.get('macd', 0):.4f}
+• ATR: {signal.get('atr', 0):.2f}
+
+⏰ {timestamp.strftime('%H:%M:%S')}
+        """
         
         await self.send_message(message)
     
@@ -125,7 +191,7 @@ Reason: {trade.get('reason', 'Unknown')}
 **Details:**
 {alert.get('details', 'No additional details')}
 
-Trading will resume automatically after cooldown period or use /resume command.
+Trading will resume automatically after cooldown period.
 
 ⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
@@ -155,6 +221,51 @@ Consider reducing position sizes or pausing trading.
 ⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
             """
         
+        elif alert_type == 'prediction_failure':
+            message = f"""
+🔴 **PREDICTION FAILURE**
+
+⚠️ AI prediction system encountered an error!
+
+**Reason:** {alert.get('reason', 'Unknown')}
+
+**Details:**
+{alert.get('details', 'No additional details')}
+
+Trading iteration will retry in next cycle.
+
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
+            """
+        
+        elif alert_type == 'model_health':
+            message = f"""
+⚠️ **MODEL HEALTH ALERT**
+
+{alert.get('message', 'Model health check failed')}
+
+**Models Status:**
+• Expected: {alert.get('expected_models', 'N/A')}
+• Loaded: {alert.get('current_models', 'N/A')}
+
+Please check model files and restart if necessary.
+
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
+            """
+        
+        elif alert_type == 'data_quality':
+            message = f"""
+⚠️ **DATA QUALITY ALERT**
+
+{alert.get('message', 'Market data quality issue detected')}
+
+**Details:**
+{alert.get('details', 'No additional details')}
+
+Trading decisions may be affected by stale or invalid data.
+
+⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
+            """
+        
         else:
             message = f"""
 ⚠️ **RISK ALERT**
@@ -177,9 +288,9 @@ Consider reducing position sizes or pausing trading.
 📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
 
 **Trading Activity**
-• Trades: {report.get('total_trades', 0)}
-• Wins: {report.get('winning_trades', 0)} 🟢
-• Losses: {report.get('losing_trades', 0)} 🔴
+• Trades: {report.get('num_trades', 0)}
+• Wins: {report.get('num_wins', 0)} 🟢
+• Losses: {report.get('num_losses', 0)} 🔴
 • Win Rate: {report.get('win_rate', 0):.1f}%
 
 **Financial Performance**

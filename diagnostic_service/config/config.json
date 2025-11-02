@@ -1,0 +1,52 @@
+{
+  "service": {
+    "name": "Trading Diagnostic Service",
+    "version": "1.0.0",
+    "port": 8080
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "performanceCheckInterval": 60000,
+    "logWatchEnabled": true,
+    "metricsRetentionDays": 30
+  },
+  "components": {
+    "backend": {
+      "name": "Backend API",
+      "type": "api",
+      "healthEndpoint": "http://localhost:8000/api/v1/health",
+      "timeout": 5000
+    },
+    "frontend": {
+      "name": "Frontend Dashboard",
+      "type": "web",
+      "url": "http://localhost:3000",
+      "timeout": 5000
+    },
+    "tradingAgent": {
+      "name": "Trading Agent",
+      "type": "process",
+      "healthFile": "bot_health.json",
+      "maxHeartbeatAge": 120
+    }
+  },
+  "thresholds": {
+    "responseTime": {
+      "warning": 1000,
+      "critical": 2000
+    },
+    "errorRate": {
+      "warning": 5,
+      "critical": 10
+    },
+    "memoryUsage": {
+      "warning": 80,
+      "critical": 90
+    },
+    "cpuUsage": {
+      "warning": 75,
+      "critical": 90
+    }
+  }
+}
+

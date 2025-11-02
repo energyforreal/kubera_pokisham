@@ -1,0 +1,65 @@
+# System Monitor Configuration
+# Configures continuous monitoring and auto-remediation for Trading Agent components
+
+monitoring:
+  # Health check interval in seconds
+  check_interval: 30
+  
+  # Enable automatic service restart on failures
+  restart_enabled: true
+  
+  # Maximum restart attempts before disabling auto-restart
+  max_restart_attempts: 3
+  
+  # Exponential backoff delays (in seconds) between restart attempts
+  restart_backoff_seconds: [5, 15, 30]
+
+# Component definitions
+components:
+  trading_bot:
+    type: process  # Process-based health check via health file
+    health_file: bot_health.json  # Health file path (relative to working_directory)
+    restart_command: python src/main.py
+    working_directory: .  # Project root
+    max_heartbeat_age: 120  # Maximum heartbeat age in seconds before marking as failed
+    
+  backend_api:
+    type: http  # HTTP-based health check
+    health_endpoint: http://localhost:8000/api/v1/health
+    restart_command: python backend/api/main.py
+    working_directory: .
+    port: 8000  # Port for conflict detection and resolution
+    timeout: 5000  # HTTP timeout in milliseconds
+    
+  frontend:
+    type: http
+    health_endpoint: http://localhost:3000
+    restart_command: npm run dev
+    working_directory: frontend_web
+    port: 3000
+    timeout: 5000
+    
+  diagnostic_service:
+    type: http
+    health_endpoint: http://localhost:8080/api/health
+    restart_command: npm start
+    working_directory: diagnostic_service
+    port: 8080
+    timeout: 5000
+    
+  diagnostic_dashboard:
+    type: http
+    health_endpoint: http://localhost:3001
+    restart_command: npm run dev -- --port 3001
+    working_directory: diagnostic_dashboard
+    port: 3001
+    timeout: 5000
+
+# Diagnostic service integration
+diagnostic_service:
+  # Enable reporting to diagnostic service
+  enabled: true
+  
+  # Diagnostic service URL
+  url: http://localhost:8080
+

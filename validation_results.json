@@ -1,0 +1,189 @@
+{
+  "timestamp": "2025-01-19T00:00:00Z",
+  "validations": {
+    "file_structure": {
+      "missing_files": [],
+      "existing_files": [
+        "backend\\api\\main.py",
+        "frontend_web\\src\\services\\api.ts",
+        "frontend_web\\src\\app\\page.tsx",
+        "src\\main.py",
+        "src\\ml\\model_coordinator.py",
+        "src\\shared_state.py",
+        "config\\config.yaml",
+        "requirements.txt",
+        "frontend_web\\package.json"
+      ],
+      "total_files": 9,
+      "all_files_exist": true
+    },
+    "model_files": {
+      "total_models": 5,
+      "missing_files": [],
+      "existing_files": [
+        {
+          "path": "models\\xgboost_BTCUSD_15m.pkl",
+          "timeframe": "15m",
+          "weight": 0.3,
+          "size_mb": 0.5422134399414062
+        },
+        {
+          "path": "models\\xgboost_BTCUSD_1h.pkl",
+          "timeframe": "1h",
+          "weight": 0.25,
+          "size_mb": 1.1834640502929688
+        },
+        {
+          "path": "models\\randomforest_BTCUSD_4h_production_20251014_125258.pkl",
+          "timeframe": "4h",
+          "weight": 0.2,
+          "size_mb": 5.625870704650879
+        },
+        {
+          "path": "models\\xgboost_BTCUSD_4h_production_20251014_114541.pkl",
+          "timeframe": "4h",
+          "weight": 0.15,
+          "size_mb": 0.7655191421508789
+        },
+        {
+          "path": "models\\lightgbm_BTCUSD_4h_production_20251014_115655.pkl",
+          "timeframe": "4h",
+          "weight": 0.1,
+          "size_mb": 0.1697854995727539
+        }
+      ],
+      "total_weight": 1.0,
+      "weight_valid": true,
+      "all_files_exist": true
+    },
+    "configuration": {
+      "multi_model_enabled": true,
+      "strategy": "cross_timeframe_weighted",
+      "timeframes": [
+        "4h",
+        "15m",
+        "1h"
+      ],
+      "risk_config": {
+        "max_daily_loss_percent": 5,
+        "max_drawdown_percent": 15,
+        "max_consecutive_losses": 5,
+        "stop_loss_atr_multiplier": 2.0,
+        "take_profit_risk_reward": 2.0
+      },
+      "issues": []
+    },
+    "api_endpoints": {
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/health",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/status",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/predict",
+          "type": "rest"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/portfolio/status",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/positions",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/test",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/analytics/daily",
+          "type": "rest"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/positions/{symbol}/close",
+          "type": "rest"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/v1/positions/{symbol}",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trades/history",
+          "type": "rest"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/settings/risk",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/settings/risk",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/market/ticker/{symbol}",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/market/ohlc/{symbol}",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/activities/recent",
+          "type": "rest"
+        },
+        {
+          "method": "WEBSOCKET",
+          "path": "/api/v1/activities/stream",
+          "type": "websocket"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/internal/broadcast",
+          "type": "rest"
+        },
+        {
+          "method": "GET",
+          "path": "/metrics",
+          "type": "rest"
+        },
+        {
+          "method": "WEBSOCKET",
+          "path": "/ws",
+          "type": "websocket"
+        }
+      ],
+      "total_endpoints": 21,
+      "websocket_endpoints": 2,
+      "rest_endpoints": 19
+    }
+  }
+}

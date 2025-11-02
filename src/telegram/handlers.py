@@ -26,26 +26,24 @@ class TelegramHandlers:
         self.db = db
         self.trading_engine = trading_engine
         self.predictor = predictor
-        self.trading_paused = False
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command."""
         welcome_message = """
 🚀 **Welcome to Kubera Pokisham Trading Agent!**
 
-I'm your AI-powered paper trading assistant for Delta Exchange.
+I'm your AI-powered monitoring assistant for Delta Exchange.
 
-**Available Commands:**
+**📊 Monitoring Commands:**
 /status - Portfolio status and PnL
 /positions - View open positions
 /signals - Latest AI trading signals
-/pause - Pause trading
-/resume - Resume trading
-/emergency_stop - Close all positions
 /daily - Daily performance report
 /help - Show this help message
 
-Ready to start paper trading! 📈
+**ℹ️ Note:** This bot is for monitoring only. All trading decisions are made automatically by the AI agent.
+
+Ready to monitor your trading! 📈
         """
         await update.message.reply_text(welcome_message, parse_mode='Markdown')
         logger.info("Bot started by user", user_id=update.effective_user.id)
@@ -73,7 +71,6 @@ Ready to start paper trading! 📈
 📍 **Open Positions:** {portfolio['num_positions']}
 📝 **Total Trades:** {portfolio['num_trades']}
 
-🔄 **Trading Status:** {'⏸️ PAUSED' if self.trading_paused else '✅ ACTIVE'}
 ⚡ **Circuit Breaker:** {'🔴 TRIGGERED' if status['circuit_breaker']['triggered'] else '🟢 OK'}
             """
             
@@ -167,7 +164,7 @@ Individual Models:
                     message += f"  {emoji} {pred['timeframe']}: {pred['signal']} ({pred['confidence']:.1%})\n"
                 
                 message += f"""
-✅ Actionable: {'Yes' if signal.get('actionable') else 'No'}
+✅ Actionable: {'Yes' if signal.get('is_actionable') else 'No'}
 📊 Data Quality: {signal.get('data_quality', 0):.1f}%
 ⏰ Time: {signal['timestamp'].strftime('%H:%M:%S')}
 """
@@ -197,79 +194,6 @@ Market Data:
             logger.error("Signals command failed", error=str(e))
             await update.message.reply_text(f"❌ Error: {str(e)}")
     
-    async def pause_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle /pause command."""
-        self.trading_paused = True
-        
-        message = """
-⏸️ **Trading Paused**
-
-• No new positions will be opened
-• Existing positions remain active
-• Stop loss and take profit still monitored
-
-Use /resume to restart trading
-        """
-        await update.message.reply_text(message, parse_mode='Markdown')
-        logger.info("Trading paused via Telegram")
-    
-    async def resume_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle /resume command."""
-        self.trading_paused = False
-        
-        message = """
-▶️ **Trading Resumed**
-
-• Bot will now execute new trades
-• All risk checks are active
-• Monitoring market conditions
-
-Good luck! 📈
-        """
-        await update.message.reply_text(message, parse_mode='Markdown')
-        logger.info("Trading resumed via Telegram")
-    
-    async def emergency_stop_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle /emergency_stop command."""
-        if not self.trading_engine:
-            await update.message.reply_text("❌ Trading engine not initialized")
-            return
-        
-        try:
-            # Get all positions
-            status = self.trading_engine.get_status()
-            positions = status['portfolio']['positions']
-            
-            if not positions:
-                await update.message.reply_text("📭 No positions to close")
-                return
-            
-            # Close all positions
-            closed_count = 0
-            for pos in positions:
-                # This would need current price - simplified for now
-                logger.warning("Emergency stop triggered", symbol=pos['symbol'])
-                closed_count += 1
-            
-            # Pause trading
-            self.trading_paused = True
-            
-            message = f"""
-🛑 **EMERGENCY STOP EXECUTED**
-
-• Closed {closed_count} position(s)
-• Trading paused automatically
-• Please review system status
-
-Use /resume when ready to restart
-            """
-            
-            await update.message.reply_text(message, parse_mode='Markdown')
-            logger.warning("Emergency stop executed via Telegram")
-            
-        except Exception as e:
-            logger.error("Emergency stop failed", error=str(e))
-            await update.message.reply_text(f"❌ Error: {str(e)}")
     
     async def daily_report_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /daily command."""
@@ -284,7 +208,7 @@ Use /resume when ready to restart
             today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
             today_trades = self.db.query(Trade).filter(
                 Trade.timestamp >= today_start,
-                Trade.is_closed == True
+                Trade.is_closed.is_(True)
             ).all()
             
             # Calculate metrics
@@ -330,31 +254,35 @@ Use /resume when ready to restart
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command."""
-        help_message = """
-📚 Kubera Pokisham - Command Reference
+        help_message = """📚 Kubera Pokisham - Monitoring Commands
 
-📊 Monitoring
+📊 **Available Commands:**
 /status - Portfolio status and PnL
 /positions - View open positions details
 /signals - Latest AI trading signals
 /daily - Daily performance report
-
-🎮 Control
-/pause - Pause trading (keeps positions)
-/resume - Resume trading
-/emergency_stop - Close all positions & pause
-
-ℹ️ Information
-/start - Welcome message
 /help - This help message
 
-💡 Tips:
-• Check /signals before major moves
-• Use /pause during high volatility
-• Review /daily report regularly
-• Emergency stop closes everything
+ℹ️ **Note:** This bot is for monitoring only. All trading decisions are made automatically by the AI agent.
 
-Need help? Contact support.
-        """
-        await update.message.reply_text(help_message)
+💡 **Tips:**
+• Check /signals to see AI predictions
+• Review /daily report regularly
+• Monitor /positions for active trades
+• Use /status for quick overview
+
+📈 Happy monitoring!"""
+        
+        try:
+            await update.message.reply_text(help_message)
+        except Exception as e:
+            # Fallback without special formatting if parse error occurs
+            logger.error("Help command formatting error", error=str(e))
+            simple_message = (
+                "Kubera Pokisham Commands:\n\n"
+                "Monitoring: /status /positions /signals /daily\n"
+                "Control: /pause /resume /emergency_stop\n"
+                "Info: /start /help"
+            )
+            await update.message.reply_text(simple_message)
 

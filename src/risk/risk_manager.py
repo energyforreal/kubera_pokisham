@@ -9,15 +9,24 @@ from sqlalchemy.orm import Session
 
 from src.core.config import trading_config
 from src.core.database import Trade, PerformanceMetrics
-from src.core.logger import logger
+from src.core.logger import logger, get_component_logger
 
 
 class RiskManager:
     """Calculate and monitor risk metrics."""
     
     def __init__(self, db: Session):
+        # Initialize component logger
+        self.logger = get_component_logger("risk_manager")
+        
         self.db = db
         self.config = trading_config.risk_management
+        
+        self.logger.info("initialization", "Risk manager initialized", {
+            "max_daily_loss_percent": self.config.get('max_daily_loss_percent', 5),
+            "max_drawdown_percent": self.config.get('max_drawdown_percent', 15),
+            "max_consecutive_losses": self.config.get('max_consecutive_losses', 5)
+        })
     
     def calculate_var(self, returns: np.ndarray, confidence: float = 0.95) -> float:
         """Calculate Value at Risk (VaR).
@@ -163,8 +172,13 @@ class RiskManager:
         Returns:
             Dict with daily risk metrics
         """
+        import time
+        start_time = time.time()
+        
         if date is None:
             date = datetime.now(timezone.utc).date()
+        
+        self.logger.info("risk_calculation", f"Calculating daily risk metrics for {date}", {"date": date.isoformat()})
         
         # Get performance metrics
         perf = self.db.query(PerformanceMetrics).filter(
@@ -172,6 +186,11 @@ class RiskManager:
         ).order_by(PerformanceMetrics.date.desc()).first()
         
         if not perf:
+            duration_ms = (time.time() - start_time) * 1000
+            self.logger.warning("risk_calculation", f"No performance data found for {date}", {
+                "date": date.isoformat(),
+                "duration_ms": duration_ms
+            })
             return {
                 'date': date,
                 'balance': 0,
@@ -180,7 +199,7 @@ class RiskManager:
                 'sharpe_ratio': 0
             }
         
-        return {
+        metrics = {
             'date': date,
             'balance': perf.balance,
             'daily_pnl': perf.daily_pnl,
@@ -205,7 +224,7 @@ class RiskManager:
         
         trades = self.db.query(Trade).filter(
             Trade.timestamp >= cutoff_date,
-            Trade.is_closed == True,
+            Trade.is_closed.is_(True),
             Trade.pnl_percent.isnot(None)
         ).all()
         
@@ -226,7 +245,7 @@ class RiskManager:
         
         # Get all closed trades for equity curve
         all_trades = self.db.query(Trade).filter(
-            Trade.is_closed == True
+            Trade.is_closed.is_(True)
         ).order_by(Trade.timestamp).all()
         
         if not all_trades:

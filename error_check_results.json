@@ -1,0 +1,1119 @@
+{
+  "start_time": "2025-11-02T13:52:40.494920+00:00",
+  "iterations": [
+    {
+      "iteration": 1,
+      "start_time": "2025-11-02T13:52:40.496915+00:00",
+      "static_analysis": {
+        "file_structure": [
+          true,
+          []
+        ],
+        "model_files": [
+          true,
+          []
+        ],
+        "configuration": [
+          true,
+          []
+        ],
+        "api_endpoints": [
+          true,
+          {
+            "total_endpoints": 21,
+            "rest_endpoints": 19,
+            "websocket_endpoints": 2,
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/health",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/predict",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/trade",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/portfolio/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/positions",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/test",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/analytics/daily",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/positions/{symbol}/close",
+                "type": "rest"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/v1/positions/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/trades/history",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ticker/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ohlc/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/activities/recent",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/api/v1/activities/stream",
+                "type": "websocket"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/internal/broadcast",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/metrics",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/ws",
+                "type": "websocket"
+              }
+            ],
+            "cors_origins": "ALLOWED_ORIGINS"
+          }
+        ],
+        "frontend_integration": [
+          true,
+          []
+        ]
+      },
+      "integration_tests": {
+        "api_connectivity": true,
+        "health_endpoint": false,
+        "critical_endpoints": [
+          false,
+          [
+            "portfolio"
+          ]
+        ],
+        "integration_script": {
+          "success": false,
+          "results": {
+            "exit_code": 1,
+            "stdout": "",
+            "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting Trading Agent Integration Tests\")\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 47, in write\n    self.__convertor.write(text)\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 177, in write\n    self.write_and_convert(text)\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 205, in write_and_convert\n    self.write_plain_text(text, cursor, len(text))\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 210, in write_plain_text\n    self.wrapped.write(text[start:end])\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f680' in position 0: character maps to <undefined>\n"
+          }
+        },
+        "validation_script": {
+          "success": true,
+          "results": {
+            "output": "Trading Agent Integration Validation\n==================================================\nValidating file structure...\nValidating model files...\nValidating configuration...\nValidating API endpoints...\n\n==================================================\nValidation Results:\n\nFILE_STRUCTURE:\n  Files: 9/9 exist\n  [OK] All critical files present\n\nMODEL_FILES:\n  Models: 5/5 exist\n  Total weight: 1.000\n  [OK] All model files present\n  [OK] Model weights valid\n\nCONFIGURATION:\n  Multi-model: Enabled\n  Strategy: cross_timeframe_weighted\n  Timeframes: ['15m', '1h', '4h']\n  [OK] Configuration valid\n\nAPI_ENDPOINTS:\n  Total endpoints: 21\n  REST endpoints: 19\n  WebSocket endpoints: 2\n  [OK] Critical endpoints: 5/5\n    - GET /api/v1/health\n    - GET /api/v1/predict\n    - POST /api/v1/trade\n    - GET /api/v1/portfolio/status\n    - WEBSOCKET /ws\n\n==================================================\nOverall Assessment:\n[OK] All validations passed - system ready for integration testing\n[INFO] Next step: Start the services and run full integration tests\n\n[INFO] Detailed results saved to validation_results.json\n"
+          }
+        }
+      },
+      "errors_found": [
+        {
+          "category": "health_check",
+          "error": "Health status: critical, models: 0",
+          "details": {},
+          "iteration": 1,
+          "timestamp": "2025-11-02T13:52:42.865503+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "portfolio endpoint unavailable (503)",
+          "details": {
+            "endpoint": "/api/v1/portfolio/status",
+            "status": 503
+          },
+          "iteration": 1,
+          "timestamp": "2025-11-02T13:52:46.147346+00:00"
+        },
+        {
+          "category": "integration_test",
+          "error": "Integration tests failed (exit code: 1)",
+          "details": {
+            "stdout": "",
+            "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting "
+          },
+          "iteration": 1,
+          "timestamp": "2025-11-02T13:52:53.886012+00:00"
+        }
+      ],
+      "fixes_applied": 0,
+      "end_time": "2025-11-02T13:53:05.635316+00:00"
+    },
+    {
+      "iteration": 2,
+      "start_time": "2025-11-02T13:53:07.646265+00:00",
+      "static_analysis": {
+        "file_structure": [
+          true,
+          []
+        ],
+        "model_files": [
+          true,
+          []
+        ],
+        "configuration": [
+          true,
+          []
+        ],
+        "api_endpoints": [
+          true,
+          {
+            "total_endpoints": 21,
+            "rest_endpoints": 19,
+            "websocket_endpoints": 2,
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/health",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/predict",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/trade",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/portfolio/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/positions",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/test",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/analytics/daily",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/positions/{symbol}/close",
+                "type": "rest"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/v1/positions/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/trades/history",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ticker/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ohlc/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/activities/recent",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/api/v1/activities/stream",
+                "type": "websocket"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/internal/broadcast",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/metrics",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/ws",
+                "type": "websocket"
+              }
+            ],
+            "cors_origins": "ALLOWED_ORIGINS"
+          }
+        ],
+        "frontend_integration": [
+          true,
+          []
+        ]
+      },
+      "integration_tests": {
+        "api_connectivity": true,
+        "health_endpoint": false,
+        "critical_endpoints": [
+          false,
+          [
+            "portfolio"
+          ]
+        ],
+        "integration_script": {
+          "success": false,
+          "results": {
+            "exit_code": 1,
+            "stdout": "",
+            "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting Trading Agent Integration Tests\")\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 47, in write\n    self.__convertor.write(text)\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 177, in write\n    self.write_and_convert(text)\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 205, in write_and_convert\n    self.write_plain_text(text, cursor, len(text))\n  File \"C:\\Users\\lohit\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\colorama\\ansitowin32.py\", line 210, in write_plain_text\n    self.wrapped.write(text[start:end])\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f680' in position 0: character maps to <undefined>\n"
+          }
+        },
+        "validation_script": {
+          "success": true,
+          "results": {
+            "output": "Trading Agent Integration Validation\n==================================================\nValidating file structure...\nValidating model files...\nValidating configuration...\nValidating API endpoints...\n\n==================================================\nValidation Results:\n\nFILE_STRUCTURE:\n  Files: 9/9 exist\n  [OK] All critical files present\n\nMODEL_FILES:\n  Models: 5/5 exist\n  Total weight: 1.000\n  [OK] All model files present\n  [OK] Model weights valid\n\nCONFIGURATION:\n  Multi-model: Enabled\n  Strategy: cross_timeframe_weighted\n  Timeframes: ['15m', '1h', '4h']\n  [OK] Configuration valid\n\nAPI_ENDPOINTS:\n  Total endpoints: 21\n  REST endpoints: 19\n  WebSocket endpoints: 2\n  [OK] Critical endpoints: 5/5\n    - GET /api/v1/health\n    - GET /api/v1/predict\n    - POST /api/v1/trade\n    - GET /api/v1/portfolio/status\n    - WEBSOCKET /ws\n\n==================================================\nOverall Assessment:\n[OK] All validations passed - system ready for integration testing\n[INFO] Next step: Start the services and run full integration tests\n\n[INFO] Detailed results saved to validation_results.json\n"
+          }
+        }
+      },
+      "errors_found": [
+        {
+          "category": "health_check",
+          "error": "Health status: critical, models: 0",
+          "details": {},
+          "iteration": 2,
+          "timestamp": "2025-11-02T13:53:10.399096+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "portfolio endpoint unavailable (503)",
+          "details": {
+            "endpoint": "/api/v1/portfolio/status",
+            "status": 503
+          },
+          "iteration": 2,
+          "timestamp": "2025-11-02T13:53:10.611327+00:00"
+        },
+        {
+          "category": "integration_test",
+          "error": "Integration tests failed (exit code: 1)",
+          "details": {
+            "stdout": "",
+            "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting "
+          },
+          "iteration": 2,
+          "timestamp": "2025-11-02T13:53:21.414247+00:00"
+        }
+      ],
+      "fixes_applied": 0,
+      "end_time": "2025-11-02T13:53:29.895920+00:00"
+    },
+    {
+      "iteration": 3,
+      "start_time": "2025-11-02T13:53:32.129080+00:00",
+      "static_analysis": {
+        "file_structure": [
+          true,
+          []
+        ],
+        "model_files": [
+          true,
+          []
+        ],
+        "configuration": [
+          true,
+          []
+        ],
+        "api_endpoints": [
+          true,
+          {
+            "total_endpoints": 21,
+            "rest_endpoints": 19,
+            "websocket_endpoints": 2,
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/health",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/predict",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/trade",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/portfolio/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/positions",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/test",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/analytics/daily",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/positions/{symbol}/close",
+                "type": "rest"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/v1/positions/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/trades/history",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ticker/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ohlc/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/activities/recent",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/api/v1/activities/stream",
+                "type": "websocket"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/internal/broadcast",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/metrics",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/ws",
+                "type": "websocket"
+              }
+            ],
+            "cors_origins": "ALLOWED_ORIGINS"
+          }
+        ],
+        "frontend_integration": [
+          true,
+          []
+        ]
+      },
+      "integration_tests": {
+        "api_connectivity": false,
+        "health_endpoint": false,
+        "critical_endpoints": [
+          false,
+          [
+            "prediction",
+            "portfolio"
+          ]
+        ],
+        "integration_script": {
+          "skipped": true,
+          "reason": "API not accessible"
+        },
+        "validation_script": {
+          "success": true,
+          "results": {
+            "output": "Trading Agent Integration Validation\n==================================================\nValidating file structure...\nValidating model files...\nValidating configuration...\nValidating API endpoints...\n\n==================================================\nValidation Results:\n\nFILE_STRUCTURE:\n  Files: 9/9 exist\n  [OK] All critical files present\n\nMODEL_FILES:\n  Models: 5/5 exist\n  Total weight: 1.000\n  [OK] All model files present\n  [OK] Model weights valid\n\nCONFIGURATION:\n  Multi-model: Enabled\n  Strategy: cross_timeframe_weighted\n  Timeframes: ['15m', '1h', '4h']\n  [OK] Configuration valid\n\nAPI_ENDPOINTS:\n  Total endpoints: 21\n  REST endpoints: 19\n  WebSocket endpoints: 2\n  [OK] Critical endpoints: 5/5\n    - GET /api/v1/health\n    - GET /api/v1/predict\n    - POST /api/v1/trade\n    - GET /api/v1/portfolio/status\n    - WEBSOCKET /ws\n\n==================================================\nOverall Assessment:\n[OK] All validations passed - system ready for integration testing\n[INFO] Next step: Start the services and run full integration tests\n\n[INFO] Detailed results saved to validation_results.json\n"
+          }
+        }
+      },
+      "errors_found": [
+        {
+          "category": "api_connectivity",
+          "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+          "details": {},
+          "iteration": 3,
+          "timestamp": "2025-11-02T13:53:37.799190+00:00"
+        },
+        {
+          "category": "health_check",
+          "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+          "details": {},
+          "iteration": 3,
+          "timestamp": "2025-11-02T13:53:49.843880+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 3,
+          "timestamp": "2025-11-02T13:54:06.955811+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 3,
+          "timestamp": "2025-11-02T13:54:24.026135+00:00"
+        }
+      ],
+      "fixes_applied": 0,
+      "end_time": "2025-11-02T13:54:35.915003+00:00"
+    },
+    {
+      "iteration": 4,
+      "start_time": "2025-11-02T13:54:37.955225+00:00",
+      "static_analysis": {
+        "file_structure": [
+          true,
+          []
+        ],
+        "model_files": [
+          true,
+          []
+        ],
+        "configuration": [
+          true,
+          []
+        ],
+        "api_endpoints": [
+          true,
+          {
+            "total_endpoints": 21,
+            "rest_endpoints": 19,
+            "websocket_endpoints": 2,
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/health",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/predict",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/trade",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/portfolio/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/positions",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/test",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/analytics/daily",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/positions/{symbol}/close",
+                "type": "rest"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/v1/positions/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/trades/history",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ticker/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ohlc/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/activities/recent",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/api/v1/activities/stream",
+                "type": "websocket"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/internal/broadcast",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/metrics",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/ws",
+                "type": "websocket"
+              }
+            ],
+            "cors_origins": "ALLOWED_ORIGINS"
+          }
+        ],
+        "frontend_integration": [
+          true,
+          []
+        ]
+      },
+      "integration_tests": {
+        "api_connectivity": false,
+        "health_endpoint": false,
+        "critical_endpoints": [
+          false,
+          [
+            "prediction",
+            "portfolio"
+          ]
+        ],
+        "integration_script": {
+          "skipped": true,
+          "reason": "API not accessible"
+        },
+        "validation_script": {
+          "success": true,
+          "results": {
+            "output": "Trading Agent Integration Validation\n==================================================\nValidating file structure...\nValidating model files...\nValidating configuration...\nValidating API endpoints...\n\n==================================================\nValidation Results:\n\nFILE_STRUCTURE:\n  Files: 9/9 exist\n  [OK] All critical files present\n\nMODEL_FILES:\n  Models: 5/5 exist\n  Total weight: 1.000\n  [OK] All model files present\n  [OK] Model weights valid\n\nCONFIGURATION:\n  Multi-model: Enabled\n  Strategy: cross_timeframe_weighted\n  Timeframes: ['15m', '1h', '4h']\n  [OK] Configuration valid\n\nAPI_ENDPOINTS:\n  Total endpoints: 21\n  REST endpoints: 19\n  WebSocket endpoints: 2\n  [OK] Critical endpoints: 5/5\n    - GET /api/v1/health\n    - GET /api/v1/predict\n    - POST /api/v1/trade\n    - GET /api/v1/portfolio/status\n    - WEBSOCKET /ws\n\n==================================================\nOverall Assessment:\n[OK] All validations passed - system ready for integration testing\n[INFO] Next step: Start the services and run full integration tests\n\n[INFO] Detailed results saved to validation_results.json\n"
+          }
+        }
+      },
+      "errors_found": [
+        {
+          "category": "api_connectivity",
+          "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+          "details": {},
+          "iteration": 4,
+          "timestamp": "2025-11-02T13:54:45.614311+00:00"
+        },
+        {
+          "category": "health_check",
+          "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+          "details": {},
+          "iteration": 4,
+          "timestamp": "2025-11-02T13:54:57.654086+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 4,
+          "timestamp": "2025-11-02T13:55:14.724201+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 4,
+          "timestamp": "2025-11-02T13:55:31.770372+00:00"
+        }
+      ],
+      "fixes_applied": 0,
+      "end_time": "2025-11-02T13:55:36.268663+00:00"
+    },
+    {
+      "iteration": 5,
+      "start_time": "2025-11-02T13:55:38.270654+00:00",
+      "static_analysis": {
+        "file_structure": [
+          true,
+          []
+        ],
+        "model_files": [
+          true,
+          []
+        ],
+        "configuration": [
+          true,
+          []
+        ],
+        "api_endpoints": [
+          true,
+          {
+            "total_endpoints": 21,
+            "rest_endpoints": 19,
+            "websocket_endpoints": 2,
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/health",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/predict",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/trade",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/portfolio/status",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/positions",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/test",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/analytics/daily",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/positions/{symbol}/close",
+                "type": "rest"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/v1/positions/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/trades/history",
+                "type": "rest"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/settings/risk",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ticker/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/market/ohlc/{symbol}",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v1/activities/recent",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/api/v1/activities/stream",
+                "type": "websocket"
+              },
+              {
+                "method": "POST",
+                "path": "/api/v1/internal/broadcast",
+                "type": "rest"
+              },
+              {
+                "method": "GET",
+                "path": "/metrics",
+                "type": "rest"
+              },
+              {
+                "method": "WEBSOCKET",
+                "path": "/ws",
+                "type": "websocket"
+              }
+            ],
+            "cors_origins": "ALLOWED_ORIGINS"
+          }
+        ],
+        "frontend_integration": [
+          true,
+          []
+        ]
+      },
+      "integration_tests": {
+        "api_connectivity": false,
+        "health_endpoint": false,
+        "critical_endpoints": [
+          false,
+          [
+            "prediction",
+            "portfolio"
+          ]
+        ],
+        "integration_script": {
+          "skipped": true,
+          "reason": "API not accessible"
+        },
+        "validation_script": {
+          "success": true,
+          "results": {
+            "output": "Trading Agent Integration Validation\n==================================================\nValidating file structure...\nValidating model files...\nValidating configuration...\nValidating API endpoints...\n\n==================================================\nValidation Results:\n\nFILE_STRUCTURE:\n  Files: 9/9 exist\n  [OK] All critical files present\n\nMODEL_FILES:\n  Models: 5/5 exist\n  Total weight: 1.000\n  [OK] All model files present\n  [OK] Model weights valid\n\nCONFIGURATION:\n  Multi-model: Enabled\n  Strategy: cross_timeframe_weighted\n  Timeframes: ['15m', '1h', '4h']\n  [OK] Configuration valid\n\nAPI_ENDPOINTS:\n  Total endpoints: 21\n  REST endpoints: 19\n  WebSocket endpoints: 2\n  [OK] Critical endpoints: 5/5\n    - GET /api/v1/health\n    - GET /api/v1/predict\n    - POST /api/v1/trade\n    - GET /api/v1/portfolio/status\n    - WEBSOCKET /ws\n\n==================================================\nOverall Assessment:\n[OK] All validations passed - system ready for integration testing\n[INFO] Next step: Start the services and run full integration tests\n\n[INFO] Detailed results saved to validation_results.json\n"
+          }
+        }
+      },
+      "errors_found": [
+        {
+          "category": "api_connectivity",
+          "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+          "details": {},
+          "iteration": 5,
+          "timestamp": "2025-11-02T13:55:45.432829+00:00"
+        },
+        {
+          "category": "health_check",
+          "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+          "details": {},
+          "iteration": 5,
+          "timestamp": "2025-11-02T13:55:57.503496+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 5,
+          "timestamp": "2025-11-02T13:56:14.575132+00:00"
+        },
+        {
+          "category": "endpoint_test",
+          "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+          "details": {},
+          "iteration": 5,
+          "timestamp": "2025-11-02T13:56:31.636663+00:00"
+        }
+      ],
+      "fixes_applied": 0,
+      "end_time": "2025-11-02T13:56:37.012926+00:00"
+    }
+  ],
+  "all_errors": [
+    {
+      "category": "health_check",
+      "error": "Health status: critical, models: 0",
+      "details": {},
+      "iteration": 1,
+      "timestamp": "2025-11-02T13:52:42.865503+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "portfolio endpoint unavailable (503)",
+      "details": {
+        "endpoint": "/api/v1/portfolio/status",
+        "status": 503
+      },
+      "iteration": 1,
+      "timestamp": "2025-11-02T13:52:46.147346+00:00"
+    },
+    {
+      "category": "integration_test",
+      "error": "Integration tests failed (exit code: 1)",
+      "details": {
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting "
+      },
+      "iteration": 1,
+      "timestamp": "2025-11-02T13:52:53.886012+00:00"
+    },
+    {
+      "category": "health_check",
+      "error": "Health status: critical, models: 0",
+      "details": {},
+      "iteration": 2,
+      "timestamp": "2025-11-02T13:53:10.399096+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "portfolio endpoint unavailable (503)",
+      "details": {
+        "endpoint": "/api/v1/portfolio/status",
+        "status": 503
+      },
+      "iteration": 2,
+      "timestamp": "2025-11-02T13:53:10.611327+00:00"
+    },
+    {
+      "category": "integration_test",
+      "error": "Integration tests failed (exit code: 1)",
+      "details": {
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 423, in <module>\n    main()\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 411, in main\n    results = tester.run_all_tests()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\lohit\\OneDrive\\Documents\\ATTRAL\\Projects\\Trading Agent\\integration_test.py\", line 345, in run_all_tests\n    print(\"\\U0001f680 Starting "
+      },
+      "iteration": 2,
+      "timestamp": "2025-11-02T13:53:21.414247+00:00"
+    },
+    {
+      "category": "api_connectivity",
+      "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+      "details": {},
+      "iteration": 3,
+      "timestamp": "2025-11-02T13:53:37.799190+00:00"
+    },
+    {
+      "category": "health_check",
+      "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+      "details": {},
+      "iteration": 3,
+      "timestamp": "2025-11-02T13:53:49.843880+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 3,
+      "timestamp": "2025-11-02T13:54:06.955811+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 3,
+      "timestamp": "2025-11-02T13:54:24.026135+00:00"
+    },
+    {
+      "category": "api_connectivity",
+      "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+      "details": {},
+      "iteration": 4,
+      "timestamp": "2025-11-02T13:54:45.614311+00:00"
+    },
+    {
+      "category": "health_check",
+      "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+      "details": {},
+      "iteration": 4,
+      "timestamp": "2025-11-02T13:54:57.654086+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 4,
+      "timestamp": "2025-11-02T13:55:14.724201+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 4,
+      "timestamp": "2025-11-02T13:55:31.770372+00:00"
+    },
+    {
+      "category": "api_connectivity",
+      "error": "API connectivity test failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=5)",
+      "details": {},
+      "iteration": 5,
+      "timestamp": "2025-11-02T13:55:45.432829+00:00"
+    },
+    {
+      "category": "health_check",
+      "error": "Health check failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+      "details": {},
+      "iteration": 5,
+      "timestamp": "2025-11-02T13:55:57.503496+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "prediction endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 5,
+      "timestamp": "2025-11-02T13:56:14.575132+00:00"
+    },
+    {
+      "category": "endpoint_test",
+      "error": "portfolio endpoint error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "details": {},
+      "iteration": 5,
+      "timestamp": "2025-11-02T13:56:31.636663+00:00"
+    }
+  ],
+  "all_fixes": [],
+  "final_status": {
+    "all_resolved": false,
+    "total_errors": 18,
+    "total_fixes": 0,
+    "iterations": 5,
+    "error_categories": {
+      "health_check": 5,
+      "endpoint_test": 8,
+      "integration_test": 2,
+      "api_connectivity": 3
+    },
+    "fix_categories": {},
+    "end_time": "2025-11-02T13:56:37.018228+00:00"
+  }
+}

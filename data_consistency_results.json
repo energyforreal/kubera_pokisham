@@ -1,0 +1,60 @@
+{
+  "summary": {
+    "total_checks": 5,
+    "passed": 1,
+    "failed": 1,
+    "errors": 3,
+    "total_time_seconds": 24.438129901885986
+  },
+  "results": {
+    "database_vs_api_data": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/portfolio/status (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163982959D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "metrics": {},
+      "timestamp": "2025-10-24T12:07:00.439331+00:00"
+    },
+    "prediction_results_consistency": {
+      "status": "FAIL",
+      "details": "Found 3 prediction issues",
+      "issues": [
+        "Exception getting prediction for 15m: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/predict?symbol=BTCUSD&timeframe=15m (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001639867FD40>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+        "Exception getting prediction for 1h: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/predict?symbol=BTCUSD&timeframe=1h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163986A8050>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+        "Exception getting prediction for 4h: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/predict?symbol=BTCUSD&timeframe=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163986A8500>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))"
+      ],
+      "metrics": {
+        "timeframes_tested": 0,
+        "avg_confidence": 0,
+        "prediction_variety": 0
+      },
+      "timestamp": "2025-10-24T12:07:12.642332+00:00"
+    },
+    "position_data_consistency": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/positions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163986A8B30>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "metrics": {},
+      "timestamp": "2025-10-24T12:07:16.692515+00:00"
+    },
+    "portfolio_metrics_calculation": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/portfolio/status (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163986A9220>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "metrics": {},
+      "timestamp": "2025-10-24T12:07:20.758815+00:00"
+    },
+    "trade_history_completeness": {
+      "status": "PASS",
+      "details": "Trade history is complete and consistent",
+      "issues": [],
+      "metrics": {
+        "total_trades": 0,
+        "closed_trades": 0,
+        "open_trades": 0,
+        "positions": 0,
+        "integrity_issues": 0
+      },
+      "timestamp": "2025-10-24T12:07:20.773824+00:00"
+    }
+  }
+}

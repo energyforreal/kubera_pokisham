@@ -1,7 +1,7 @@
 """Circuit breaker system to halt trading under adverse conditions."""
 
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
 
@@ -85,7 +85,7 @@ class CircuitBreaker:
         
         today_trades = self.db.query(Trade).filter(
             Trade.timestamp >= today_start,
-            Trade.is_closed == True
+            Trade.is_closed.is_(True)
         ).all()
         
         daily_pnl = sum(t.pnl for t in today_trades) if today_trades else 0
@@ -146,7 +146,7 @@ class CircuitBreaker:
         
         # Get recent trades
         recent_trades = self.db.query(Trade).filter(
-            Trade.is_closed == True
+            Trade.is_closed.is_(True)
         ).order_by(Trade.timestamp.desc()).limit(max_consecutive + 5).all()
         
         # Count consecutive losses
@@ -202,6 +202,22 @@ class CircuitBreaker:
         """
         self.last_trade_time = timestamp or datetime.now(timezone.utc)
     
+    def record_trade(self, pnl: float, timestamp: datetime):
+        """Record a trade for circuit breaker tracking.
+        
+        Args:
+            pnl: Trade profit/loss
+            timestamp: Trade timestamp
+        """
+        self.update_last_trade_time(timestamp)
+        
+        # Log trade for tracking
+        logger.debug(
+            "Trade recorded for circuit breaker",
+            pnl=pnl,
+            timestamp=timestamp
+        )
+    
     def reset(self):
         """Reset circuit breaker (manual override)."""
         self.is_triggered = False
@@ -238,7 +254,7 @@ class CircuitBreaker:
         self,
         current_balance: float,
         initial_balance: float
-    ) -> tuple[bool, Optional[str]]:
+    ) -> Tuple[bool, Optional[str]]:
         """Validate if a trade can be executed.
         
         Args:

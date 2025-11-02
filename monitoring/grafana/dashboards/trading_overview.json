@@ -1,0 +1,168 @@
+{
+  "dashboard": {
+    "title": "Trading Overview",
+    "tags": ["trading", "overview"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Portfolio Balance",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "portfolio_balance",
+            "legendFormat": "Balance (USD)"
+          }
+        ]
+      },
+      {
+        "title": "Total P&L",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "pnl_total",
+            "legendFormat": "P&L (USD)"
+          }
+        ]
+      },
+      {
+        "title": "Open Positions",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "open_positions"
+          }
+        ]
+      },
+      {
+        "title": "Win Rate",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "trading_win_rate"
+          }
+        ],
+        "options": {
+          "reduceOptions": {"values": false, "calcs": ["lastNotNull"]},
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.6, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Sharpe Ratio",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "sharpe_ratio"
+          }
+        ]
+      },
+      {
+        "title": "Max Drawdown",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 8},
+        "targets": [
+          {
+            "expr": "max_drawdown"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": -1000, "color": "yellow"},
+                {"value": -2000, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Trades per Hour",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "rate(trades_total[1h])",
+            "legendFormat": "{{side}} - {{status}}"
+          }
+        ]
+      },
+      {
+        "title": "Circuit Breaker Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "sum(circuit_breaker_active)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "value": "0", "text": "OK"},
+              {"type": "value", "value": "1", "text": "TRIGGERED"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Drawdown Percentage",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "portfolio_drawdown_percent"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 20,
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "orange"},
+                {"value": 15, "color": "red"}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 36,
+    "version": 1
+  }
+}
+

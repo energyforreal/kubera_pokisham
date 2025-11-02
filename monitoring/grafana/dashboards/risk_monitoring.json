@@ -1,0 +1,150 @@
+{
+  "dashboard": {
+    "title": "Risk Monitoring",
+    "tags": ["risk", "safety"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Value at Risk (VaR 95%)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "var_95",
+            "legendFormat": "VaR 95%"
+          },
+          {
+            "expr": "cvar_95",
+            "legendFormat": "CVaR 95%"
+          }
+        ]
+      },
+      {
+        "title": "Risk Ratios",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "sharpe_ratio",
+            "legendFormat": "Sharpe Ratio"
+          },
+          {
+            "expr": "sortino_ratio",
+            "legendFormat": "Sortino Ratio"
+          }
+        ]
+      },
+      {
+        "title": "Circuit Breaker Events",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "increase(circuit_breaker_triggers_total[1h])",
+            "legendFormat": "{{breaker_type}}"
+          }
+        ]
+      },
+      {
+        "title": "Active Circuit Breakers",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "sum(circuit_breaker_active)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Max Drawdown",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 16},
+        "targets": [
+          {
+            "expr": "max_drawdown"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": -1000, "color": "yellow"},
+                {"value": -1500, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Drawdown %",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "portfolio_drawdown_percent"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 20,
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "orange"},
+                {"value": 15, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Win Rate",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+        "targets": [
+          {
+            "expr": "trading_win_rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "unit": "percentunit",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.6, "color": "green"}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 36,
+    "version": 1,
+    "uid": "risk-monitoring"
+  }
+}
+

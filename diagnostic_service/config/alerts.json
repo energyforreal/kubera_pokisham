@@ -1,0 +1,76 @@
+{
+  "channels": {
+    "telegram": {
+      "enabled": false,
+      "severity": ["critical", "warning", "info"]
+    },
+    "slack": {
+      "enabled": false,
+      "severity": ["critical", "warning"]
+    },
+    "email": {
+      "enabled": false,
+      "severity": ["critical"]
+    }
+  },
+  "rules": [
+    {
+      "id": "component_downtime",
+      "name": "Component Downtime",
+      "description": "Triggered when a component stops responding",
+      "condition": "heartbeat_age > 120",
+      "severity": "critical",
+      "enabled": true
+    },
+    {
+      "id": "api_latency_spike",
+      "name": "API Latency Spike",
+      "description": "API response time exceeds threshold",
+      "condition": "response_time > 2000",
+      "severity": "warning",
+      "enabled": true
+    },
+    {
+      "id": "high_error_rate",
+      "name": "High Error Rate",
+      "description": "Error count exceeds threshold in time window",
+      "condition": "errors_per_10min > 5",
+      "severity": "warning",
+      "enabled": true
+    },
+    {
+      "id": "circuit_breaker_triggered",
+      "name": "Circuit Breaker Triggered",
+      "description": "Trading circuit breaker has been activated",
+      "condition": "circuit_breaker_active == true",
+      "severity": "critical",
+      "enabled": true
+    },
+    {
+      "id": "high_memory_usage",
+      "name": "High Memory Usage",
+      "description": "System memory usage above threshold",
+      "condition": "memory_usage > 80",
+      "severity": "warning",
+      "enabled": true
+    },
+    {
+      "id": "trade_execution_failure",
+      "name": "Trade Execution Failure",
+      "description": "Trade execution failed",
+      "condition": "trade_status == 'failed'",
+      "severity": "critical",
+      "enabled": true
+    }
+  ],
+  "rateLimiting": {
+    "enabled": true,
+    "windowMinutes": 5,
+    "maxAlertsPerWindow": 3
+  },
+  "deduplication": {
+    "enabled": true,
+    "windowMinutes": 10
+  }
+}
+

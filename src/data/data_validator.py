@@ -1,6 +1,6 @@
 """Data quality validation and cleaning."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Optional, Tuple
 
 import numpy as np
@@ -82,7 +82,7 @@ class DataValidator:
                 
                 # Forward fill for price data
                 if col != 'volume':
-                    df[col] = df[col].fillna(method='ffill')
+                    df[col] = df[col].ffill()
                 else:
                     # Zero fill for volume
                     df[col] = df[col].fillna(0)
@@ -114,7 +114,7 @@ class DataValidator:
             return df, issues
         
         # Check for future timestamps
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         future_count = (df['timestamp'] > now).sum()
         if future_count > 0:
             logger.warning("Future timestamps detected", count=future_count)

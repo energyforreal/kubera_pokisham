@@ -22,20 +22,26 @@ class Portfolio:
     
     def _load_state(self):
         """Load portfolio state from database."""
-        # Get latest performance metrics
-        latest_perf = self.db.query(PerformanceMetrics).order_by(
-            PerformanceMetrics.date.desc()
-        ).first()
-        
-        if latest_perf:
-            self.balance = latest_perf.balance
-            self.equity = latest_perf.equity
-        
-        logger.info(
-            "Portfolio state loaded",
-            balance=self.balance,
-            equity=self.equity
-        )
+        try:
+            # Get latest performance metrics
+            latest_perf = self.db.query(PerformanceMetrics).order_by(
+                PerformanceMetrics.date.desc()
+            ).first()
+            
+            if latest_perf:
+                self.balance = latest_perf.balance
+                self.equity = latest_perf.equity
+            
+            logger.info(
+                "Portfolio state loaded",
+                balance=self.balance,
+                equity=self.equity
+            )
+        except Exception as e:
+            logger.error("Failed to load portfolio state", error=str(e))
+            # Use default values
+            self.balance = self.initial_balance
+            self.equity = self.initial_balance
     
     def get_positions(self) -> List[Position]:
         """Get all open positions.
@@ -100,7 +106,7 @@ class Portfolio:
             size=size,
             stop_loss=stop_loss,
             take_profit=take_profit,
-            entry_timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc)
         )
         
         self.db.add(position)
@@ -182,11 +188,11 @@ class Portfolio:
         pnl_percent = (pnl / (position.entry_price * position.size)) * 100
         
         # Calculate holding period
-        holding_period = (datetime.now(timezone.utc) - position.entry_timestamp).total_seconds()
+        holding_period = (datetime.now(timezone.utc) - position.timestamp).total_seconds()
         
         # Create trade record
         trade = Trade(
-            timestamp=position.entry_timestamp,
+            timestamp=position.timestamp,
             symbol=symbol,
             side=position.side,
             entry_price=position.entry_price,
@@ -260,7 +266,7 @@ class Portfolio:
         total_unrealized = sum(p.unrealized_pnl for p in positions)
         
         # Get total PnL from closed trades
-        closed_trades = self.db.query(Trade).filter(Trade.is_closed == True).all()
+        closed_trades = self.db.query(Trade).filter(Trade.is_closed.is_(True)).all()
         total_realized = sum(t.pnl for t in closed_trades) if closed_trades else 0
         
         # Calculate returns
@@ -304,7 +310,7 @@ class Portfolio:
         # Get today's trades
         today_trades = self.db.query(Trade).filter(
             Trade.timestamp >= today,
-            Trade.is_closed == True
+            Trade.is_closed.is_(True)
         ).all()
         
         daily_pnl = sum(t.pnl for t in today_trades) if today_trades else 0
@@ -314,7 +320,7 @@ class Portfolio:
         
         # Get consecutive losses
         recent_trades = self.db.query(Trade).filter(
-            Trade.is_closed == True
+            Trade.is_closed.is_(True)
         ).order_by(Trade.timestamp.desc()).limit(10).all()
         
         consecutive_losses = 0
@@ -325,7 +331,7 @@ class Portfolio:
                 break
         
         # Calculate total metrics
-        all_trades = self.db.query(Trade).filter(Trade.is_closed == True).all()
+        all_trades = self.db.query(Trade).filter(Trade.is_closed.is_(True)).all()
         total_pnl = sum(t.pnl for t in all_trades) if all_trades else 0
         total_pnl_pct = (total_pnl / self.initial_balance) * 100
         
@@ -337,9 +343,9 @@ class Portfolio:
             existing.daily_pnl_percent = (daily_pnl / self.initial_balance) * 100
             existing.total_pnl = total_pnl
             existing.total_pnl_percent = total_pnl_pct
-            existing.total_trades = len(today_trades)
-            existing.winning_trades = winning_trades
-            existing.losing_trades = losing_trades
+            existing.num_trades = len(today_trades)
+            existing.num_wins = winning_trades
+            existing.num_losses = losing_trades
             existing.win_rate = win_rate
             existing.consecutive_losses = consecutive_losses
         else:
@@ -352,9 +358,9 @@ class Portfolio:
                 daily_pnl_percent=(daily_pnl / self.initial_balance) * 100,
                 total_pnl=total_pnl,
                 total_pnl_percent=total_pnl_pct,
-                total_trades=len(today_trades),
-                winning_trades=winning_trades,
-                losing_trades=losing_trades,
+                num_trades=len(today_trades),
+                num_wins=winning_trades,
+                num_losses=losing_trades,
                 win_rate=win_rate,
                 consecutive_losses=consecutive_losses
             )

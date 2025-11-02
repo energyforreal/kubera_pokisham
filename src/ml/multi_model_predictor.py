@@ -12,6 +12,8 @@ from src.data.delta_client import DeltaExchangeClient
 from src.data.feature_engineer import FeatureEngineer
 from src.data.data_validator import DataValidator
 from src.ml.xgboost_model import XGBoostTradingModel
+from src.ml.generic_model import GenericTradingModel
+from src.utils.timestamp import get_current_time_utc, format_timestamp
 
 
 class MultiModelPredictor:
@@ -51,7 +53,8 @@ class MultiModelPredictor:
             ]
         
         for config in model_configs:
-            model = XGBoostTradingModel()
+            # Use generic model wrapper to support all model types
+            model = GenericTradingModel()
             try:
                 model.load(config['path'])
                 self.models.append({
@@ -63,6 +66,8 @@ class MultiModelPredictor:
                 logger.info(f"Loaded model", path=config['path'], timeframe=config.get('timeframe'))
             except FileNotFoundError:
                 logger.warning(f"Model not found", path=config['path'])
+            except Exception as e:
+                logger.error(f"Failed to load model", path=config['path'], error=str(e))
     
     def get_latest_signal(self, symbol: str, timeframe: str = '15m') -> Dict:
         """Get combined trading signal from all models.
@@ -81,11 +86,11 @@ class MultiModelPredictor:
             return self._empty_signal()
         
         try:
-            # Fetch market data
+            # Fetch market data (need 500 to ensure 200+ rows after feature engineering)
             df = self.delta_client.get_ohlc_candles(
                 symbol=symbol,
                 resolution=timeframe,
-                limit=300
+                limit=500
             )
             
             if df.empty:
@@ -119,10 +124,11 @@ class MultiModelPredictor:
                     
                     predictions.append({
                         'timeframe': model_info['timeframe'],
-                        'prediction': latest_pred,
-                        'confidence': latest_conf,
-                        'weight': model_info['weight'],
-                        'signal': signal_str
+                        'prediction': int(latest_pred),  # Convert numpy.int64 to Python int
+                        'confidence': float(latest_conf),  # Convert numpy.float64 to Python float
+                        'weight': float(model_info['weight']),  # Ensure weight is float
+                        'signal': signal_str,
+                        'model': model_info.get('name', f"Model_{len(predictions)}")
                     })
                     
                     # Log individual model prediction
@@ -145,10 +151,12 @@ class MultiModelPredictor:
             # Combine predictions based on strategy
             combined_signal = self._combine_predictions(predictions)
             
-            # Add metadata
+            # Add metadata with readable timestamp
+            timestamp = get_current_time_utc()
             combined_signal.update({
                 'symbol': symbol,
-                'timestamp': datetime.now(timezone.utc),
+                'timestamp': timestamp,
+                'timestamp_display': format_timestamp(timestamp),
                 'strategy': self.strategy,
                 'individual_predictions': predictions,
                 'data_quality': metrics.get('quality_score', 0)
@@ -165,7 +173,7 @@ class MultiModelPredictor:
                     signal=combined_signal.get('prediction'),
                     confidence=f"{combined_signal.get('confidence', 0):.2%}",
                     agreement_level=f"{combined_signal.get('agreement_level', 0):.0%}",
-                    actionable=combined_signal.get('actionable'),
+                    actionable=combined_signal.get('is_actionable'),
                     duration_ms=f"{duration*1000:.0f}"
                 )
             else:
@@ -247,7 +255,7 @@ class MultiModelPredictor:
                 'confidence': min_confidence,
                 'models_agree': True,
                 'agreement_level': 1.0,
-                'actionable': min_confidence >= self.min_combined_confidence
+                'is_actionable': min_confidence >= self.min_combined_confidence
             }
         else:
             # Models disagree - return HOLD
@@ -256,7 +264,7 @@ class MultiModelPredictor:
                 'confidence': 0.0,
                 'models_agree': False,
                 'agreement_level': 0.0,
-                'actionable': False
+                'is_actionable': False
             }
     
     def _weighted_strategy(self, predictions: List[Dict]) -> Dict:
@@ -293,7 +301,7 @@ class MultiModelPredictor:
             'confidence': weighted_conf,
             'models_agree': agreement >= 0.7,
             'agreement_level': agreement,
-            'actionable': weighted_conf >= self.min_combined_confidence and final_signal != 'HOLD'
+            'is_actionable': weighted_conf >= self.min_combined_confidence and final_signal != 'HOLD'
         }
     
     def _voting_strategy(self, predictions: List[Dict]) -> Dict:
@@ -332,7 +340,7 @@ class MultiModelPredictor:
             'confidence': avg_confidence,
             'models_agree': agreement >= 0.7,
             'agreement_level': agreement,
-            'actionable': avg_confidence >= self.min_combined_confidence and majority_signal != 'HOLD'
+            'is_actionable': avg_confidence >= self.min_combined_confidence and majority_signal != 'HOLD'
         }
     
     def _map_prediction(self, prediction: int) -> str:
@@ -345,18 +353,29 @@ class MultiModelPredictor:
             Signal string
         """
         mapping = {0: 'SELL', 1: 'HOLD', 2: 'BUY'}
-        return mapping.get(prediction, 'HOLD')
+        result = mapping.get(prediction, 'HOLD')
+        
+        # Validation
+        if prediction not in mapping:
+            logger.warning(
+                "Unknown prediction value, defaulting to HOLD",
+                prediction=prediction
+            )
+        
+        return result
     
     def _empty_signal(self) -> Dict:
         """Return empty/default signal."""
+        timestamp = get_current_time_utc()
         return {
             'prediction': 'HOLD',
             'confidence': 0.0,
             'models_agree': False,
             'agreement_level': 0.0,
-            'actionable': False,
+            'is_actionable': False,
             'symbol': '',
-            'timestamp': datetime.utcnow(),
+            'timestamp': timestamp,
+            'timestamp_display': format_timestamp(timestamp),
             'strategy': self.strategy,
             'individual_predictions': [],
             'data_quality': 0

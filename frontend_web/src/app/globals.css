@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+/* Ant Design Dark Theme Overrides - Updated with gradient theme */
+.dark .ant-btn-primary {
+  background: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+  border-color: #ff6801;
+  box-shadow: 0 2px 8px rgba(255, 104, 1, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dark .ant-btn-primary:hover {
+  background: linear-gradient(316deg, #ffb347 0%, #ff7518 74%);
+  border-color: #ffb347;
+  box-shadow: 0 4px 12px rgba(255, 104, 1, 0.5);
+  transform: translateY(-1px);
+}
+
+.dark .ant-table {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.dark .ant-table-thead > tr > th {
+  background: #111827;
+  color: #9ca3af;
+  border-bottom: 1px solid #374151;
+}
+
+.dark .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #374151;
+}
+
+.dark .ant-table-tbody > tr:hover > td {
+  background: #374151;
+}
+
+.dark .ant-input {
+  background: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .ant-input:hover,
+.dark .ant-input:focus {
+  border-color: #06b6d4;
+}
+
+.dark .ant-select-selector {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+.dark .ant-select-dropdown {
+  background: #1f2937;
+}
+
+.dark .ant-select-item {
+  color: #f9fafb;
+}
+
+.dark .ant-select-item-option-selected {
+  background: #374151;
+}
+
+.dark .ant-form-item-label > label {
+  color: #9ca3af;
+}
+
+.dark .ant-statistic-title {
+  color: #9ca3af;
+}
+
+.dark .ant-statistic-content {
+  color: #f9fafb;
+}
+
+.dark .ant-modal-content {
+  background: #1f2937;
+}
+
+.dark .ant-modal-header {
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.dark .ant-modal-title {
+  color: #f9fafb;
+}
+
+.dark .ant-drawer-content {
+  background: #1f2937;
+}
+
+.dark .ant-drawer-header {
+  background: #111827;
+  border-bottom: 1px solid #374151;
+  color: #f9fafb;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-md border border-white/10;
+  }
+  
+  .gradient-border {
+    @apply relative;
+  }
+  
+  .gradient-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-lg p-[1px];
+    background: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+  
+  .metric-card {
+    @apply bg-dark-card border border-dark-border rounded-lg p-6 transition-all duration-300;
+    border-color: rgba(255, 104, 1, 0.3);
+  }
+  
+  .metric-card:hover {
+    border-color: rgba(255, 104, 1, 0.6);
+    box-shadow: 0 4px 20px rgba(255, 104, 1, 0.15);
+  }
+  
+  .trading-card {
+    @apply bg-gradient-to-br from-dark-card to-dark-surface border rounded-xl p-6 shadow-xl;
+    border-color: rgba(255, 104, 1, 0.4);
+  }
+  
+  .pulse-ring {
+    @apply animate-ping absolute inline-flex h-full w-full rounded-full opacity-75;
+    background: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+  }
+  
+  .glow-text {
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+  }
+  
+  /* New gradient utilities */
+  .gradient-primary {
+    background: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(315deg, #FDEE00 0%, #ff7518 74%);
+  }
+  
+  .gradient-warm {
+    background: linear-gradient(135deg, #ff6801 0%, #FDEE00 50%, #ffb347 100%);
+  }
+  
+  .btn-gradient {
+    background: linear-gradient(316deg, #ff6801 0%, #ffb347 74%);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-gradient:hover {
+    background: linear-gradient(316deg, #ffb347 0%, #ff7518 74%);
+    box-shadow: 0 4px 12px rgba(255, 104, 1, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 249, 250, 251;
+  --background-end-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+

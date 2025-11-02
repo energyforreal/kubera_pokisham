@@ -55,6 +55,32 @@ def check_health():
         print(f"  Trades Executed: {status.get('trades_count', 0)}")
         print(f"  Errors Encountered: {status.get('errors_count', 0)}")
         
+        print("\n⏱️  Interval Monitoring:")
+        # Check if we have signal interval data
+        if 'signal_intervals' in status:
+            intervals = status['signal_intervals']
+            if intervals:
+                avg_interval = sum(intervals) / len(intervals)
+                print(f"  Average Signal Interval: {avg_interval:.0f}s (expected: 300s)")
+                if abs(avg_interval - 300) > 30:
+                    print(f"  ⚠️  WARNING: Signal interval deviation detected!")
+                else:
+                    print(f"  ✅ Signal intervals are within expected range")
+            else:
+                print(f"  No signal interval data available yet")
+        else:
+            print(f"  Signal interval monitoring not available")
+        
+        print("\n🤖 Model Usage:")
+        models_loaded = status.get('models_loaded', 0)
+        print(f"  Models Loaded: {models_loaded}/5")
+        if models_loaded == 5:
+            print(f"  ✅ All models loaded and active")
+        elif models_loaded > 0:
+            print(f"  ⚠️  Only {models_loaded}/5 models loaded")
+        else:
+            print(f"  ❌ No models loaded")
+        
         if status.get('errors_count', 0) > 0:
             print("\n⚠️  Last Error:")
             last_error = status.get('last_error', {})

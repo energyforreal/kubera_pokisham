@@ -88,6 +88,10 @@ class TradingConfig:
         return self.config.get('signal_filters', {})
     
     @property
+    def data(self) -> dict:
+        return self.config.get('data', {})
+    
+    @property
     def execution(self) -> dict:
         return self.config.get('execution', {})
     
@@ -103,6 +107,10 @@ class TradingConfig:
     def alerts(self) -> dict:
         return self.config.get('alerts', {})
     
+    @property
+    def model_driven_exits(self) -> dict:
+        return self.config.get('model_driven_exits', {})
+    
     def get_timeframes(self) -> List[str]:
         """Get list of timeframes to analyze."""
         return self.trading.get('timeframes', ['15m', '1h', '4h'])
@@ -114,6 +122,10 @@ class TradingConfig:
     def get_ema_periods(self) -> List[int]:
         """Get EMA periods for feature engineering."""
         return self.features.get('ema_periods', [9, 12, 26, 50])
+    
+    def get(self, key: str, default=None):
+        """Get config value by key (for backward compatibility)."""
+        return self.config.get(key, default)
 
 
 # Global settings instance

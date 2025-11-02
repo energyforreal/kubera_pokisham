@@ -6,7 +6,7 @@ from typing import Dict, Optional
 import pandas as pd
 
 from src.core.config import settings, trading_config
-from src.core.logger import logger
+from src.core.logger import logger, get_component_logger
 from src.data.delta_client import DeltaExchangeClient
 from src.data.feature_engineer import FeatureEngineer
 from src.data.data_validator import DataValidator
@@ -17,6 +17,9 @@ class TradingPredictor:
     """Generate trading predictions from market data."""
     
     def __init__(self, model_path: Optional[str] = None):
+        # Initialize component logger
+        self.logger = get_component_logger("ml_predictor")
+        
         self.model = XGBoostTradingModel()
         self.delta_client = DeltaExchangeClient()
         self.feature_engineer = FeatureEngineer()
@@ -28,9 +31,9 @@ class TradingPredictor:
         
         try:
             self.model.load(model_path)
-            logger.info("Prediction model loaded", path=model_path)
+            self.logger.info("model_loaded", "Prediction model loaded successfully", {"path": model_path})
         except FileNotFoundError:
-            logger.warning("Model not found, needs training first", path=model_path)
+            self.logger.warning("model_loading", "Model not found, needs training first", {"path": model_path})
     
     def get_latest_signal(self, symbol: str, timeframe: str = '15m') -> Dict:
         """Get latest trading signal for a symbol.
@@ -42,6 +45,11 @@ class TradingPredictor:
         Returns:
             Signal dictionary with prediction, confidence, and metadata
         """
+        import time
+        start_time = time.time()
+        
+        self.logger.info("signal_generation", f"Generating signal for {symbol}", {"symbol": symbol, "timeframe": timeframe})
+        
         try:
             # Fetch latest data (need enough for indicators)
             df = self.delta_client.get_ohlc_candles(
@@ -94,18 +102,25 @@ class TradingPredictor:
             min_confidence = trading_config.signal_filters.get('min_confidence', 0.65)
             signal['is_actionable'] = confidence >= min_confidence and prediction != 'HOLD'
             
-            logger.info(
-                "Signal generated",
-                symbol=symbol,
-                prediction=prediction,
-                confidence=confidence,
-                actionable=signal['is_actionable']
+            duration_ms = (time.time() - start_time) * 1000
+            self.logger.info(
+                "signal_generated",
+                "Signal generated successfully",
+                {
+                    "symbol": symbol,
+                    "prediction": prediction,
+                    "confidence": confidence,
+                    "actionable": signal['is_actionable'],
+                    "timeframe": timeframe
+                },
+                duration_ms=duration_ms
             )
             
             return signal
             
         except Exception as e:
-            logger.error("Signal generation failed", error=str(e), symbol=symbol)
+            duration_ms = (time.time() - start_time) * 1000
+            self.logger.error("signal_generation", "Signal generation failed", {"symbol": symbol, "error": str(e)}, duration_ms=duration_ms, error=e)
             return self._empty_signal(f"Error: {str(e)}")
     
     def get_multi_timeframe_signal(self, symbol: str) -> Dict:

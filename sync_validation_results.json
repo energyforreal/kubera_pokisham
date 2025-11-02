@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "total_validations": 8,
+    "passed": 3,
+    "failed": 1,
+    "errors": 4,
+    "total_time_seconds": 12.389103174209595
+  },
+  "results": {
+    "timestamp_formats": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000025A9F3D7DA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:23.713266+00:00"
+    },
+    "api_response_schemas": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000025A9F3D7DA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:27.820456+00:00"
+    },
+    "database_model_alignment": {
+      "status": "PASS",
+      "details": "Database models align with API expectations",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:27.820456+00:00"
+    },
+    "config_consistency": {
+      "status": "PASS",
+      "details": "Configuration is consistent and valid",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:27.836336+00:00"
+    },
+    "timeframe_strings": {
+      "status": "PASS",
+      "details": "All timeframes use valid format",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:27.836336+00:00"
+    },
+    "health_file_sync": {
+      "status": "FAIL",
+      "details": "Found 1 health sync issues",
+      "issues": [
+        "Heartbeat is 215059s old (may indicate sync issues)"
+      ],
+      "timestamp": "2025-10-26T07:15:27.836336+00:00"
+    },
+    "websocket_message_formats": {
+      "status": "ERROR",
+      "details": "Exception: BaseEventLoop.create_connection() got an unexpected keyword argument 'timeout'",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:27.901350+00:00"
+    },
+    "signal_trade_data_structures": {
+      "status": "ERROR",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/predict?symbol=BTCUSD&timeframe=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000025A9F5C8D70>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))",
+      "issues": [],
+      "timestamp": "2025-10-26T07:15:32.007647+00:00"
+    }
+  }
+}

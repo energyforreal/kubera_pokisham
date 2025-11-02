@@ -26,8 +26,9 @@ class FeatureEngineer:
             DataFrame with added features
         """
         if df.empty or len(df) < 200:
-            logger.warning("Insufficient data for feature engineering", rows=len(df))
-            return df
+            logger.warning("Insufficient data for feature engineering", rows=len(df), minimum_required=200)
+            # Return empty DataFrame to prevent invalid predictions
+            return pd.DataFrame()
         
         df = df.copy()
         
